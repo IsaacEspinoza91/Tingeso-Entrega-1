@@ -1,0 +1,32 @@
+package com.kartingRM.AppKartingRM.entities;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "detalle_comprobante")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class DetalleComprobante {
+
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EmbeddedId
+    private DetalleComprobanteId idDetalle;
+
+    private String nombre;
+    private int tarifa;
+    private int descuentoGrupo;
+    private int descuentoEspecial;
+    private int montoTotal;
+    private int montoIva;
+    private int montoFinal;
+
+    @ManyToOne
+    @MapsId("comprobante")
+    @JoinColumn(name = "id_comprobante")
+    private Comprobante comprobante;
+}
