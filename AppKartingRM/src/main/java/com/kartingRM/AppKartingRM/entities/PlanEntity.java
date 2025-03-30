@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data       // Elementos de lombok
 @NoArgsConstructor
 @AllArgsConstructor
-public class Plan {
+public class PlanEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

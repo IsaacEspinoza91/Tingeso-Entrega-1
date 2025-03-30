@@ -10,16 +10,17 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ReservaKart {
+@IdClass(ReservaKartId.class)
+public class ReservaKartEntity {
 
     @Id
     @ManyToOne
     @JoinColumn(name = "id_reserva")
-    private Reserva reserva;
+    private ReservaEntity reserva;
 
     @Id
     @ManyToOne
     @JoinColumn(name = "id_kart")
-    private Kart kart;
+    private KartEntity kart;
 
 }

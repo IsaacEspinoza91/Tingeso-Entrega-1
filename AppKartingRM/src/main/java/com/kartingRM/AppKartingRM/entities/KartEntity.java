@@ -6,20 +6,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "comprobante")
+@Table(name = "kart")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comprobante {
+public class KartEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idComprobante;
-    private boolean pagado;
-    private int total;
+    private Long idkart;
 
-    @OneToOne
-    @JoinColumn(name = "id_reserva")
-    private Reserva reserva;
+    private String modelo;
+    private String estado;
 
 }

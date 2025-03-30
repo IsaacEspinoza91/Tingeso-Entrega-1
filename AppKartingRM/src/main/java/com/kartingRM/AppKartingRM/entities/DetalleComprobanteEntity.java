@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DetalleComprobante {
+public class DetalleComprobanteEntity {
 
     //@Id
     //@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,5 +28,5 @@ public class DetalleComprobante {
     @ManyToOne
     @MapsId("comprobante")
     @JoinColumn(name = "id_comprobante")
-    private Comprobante comprobante;
+    private ComprobanteEntity comprobante;
 }

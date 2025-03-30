@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Reserva {
+public class ReservaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,9 +28,9 @@ public class Reserva {
 
     @ManyToOne  // El Many se refiere a la entidad actual a one de la de abajo (plan)
     @JoinColumn(name = "id_plan")
-    private Plan plan;
+    private PlanEntity plan;
 
     @ManyToOne
     @JoinColumn(name = "rut_reservante")
-    private Cliente reservante;
+    private ClienteEntity reservante;
 }
