@@ -17,6 +17,7 @@ public class ReservaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
     private Long idReserva;
 
     @Temporal(TemporalType.DATE)
@@ -31,6 +32,6 @@ public class ReservaEntity {
     private PlanEntity plan;
 
     @ManyToOne
-    @JoinColumn(name = "rut_reservante")
+    @JoinColumn(name = "id_reservante")
     private ClienteEntity reservante;
 }

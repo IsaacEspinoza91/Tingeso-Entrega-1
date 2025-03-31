@@ -5,14 +5,14 @@ import jakarta.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
-// Clase que permite que la DetalleComprobante tenga una llave primaria compuesta, esto para verificar que es entidad debil
+// Clase que permite que la DetalleComprobante tenga una llave primaria compuesta, esto para verificar que es entidad débil
 @Embeddable
 public class DetalleComprobanteId implements Serializable {
     private Long idDetalle;
     private Long comprobante;
 
 
-    // Al usar llaves primarias compuestas, se deben sobre escibir estos metodos para evitar posibles errores (warnings)
+    // Al usar llaves primarias compuestas, se deben sobrescribir estos métodos para evitar posibles errores (warnings)
     @Override
     public boolean equals(Object o) {
         if (this == o)
