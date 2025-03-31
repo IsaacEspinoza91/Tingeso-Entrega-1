@@ -25,7 +25,7 @@ public class ClienteService {
         return clienteRepository.findByRut(rut);
     }
 
-    public ClienteEntity saveCliente(ClienteEntity cliente){
+    public ClienteEntity createCliente(ClienteEntity cliente){
         return clienteRepository.save(cliente);
     }
 

@@ -40,8 +40,8 @@ public class KartController {
     }
 
     @DeleteMapping("/{id_kart}")
-    public ResponseEntity<Boolean> deleteKartById(@PathVariable Long id) throws Exception {
-        var isDeleted = kartService.deleteKart(id);
+    public ResponseEntity<Boolean> deleteKartById(@PathVariable Long id_kart) throws Exception {
+        kartService.deleteKart(id_kart);
         return ResponseEntity.noContent().build();
     }
 }

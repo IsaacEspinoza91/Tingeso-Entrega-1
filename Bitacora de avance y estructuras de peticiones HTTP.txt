@@ -1,0 +1,142 @@
+		Servicios
+
+Cliente
+-	Obtener todos los clientes: GetClientes()
+-	Obtener cliente por id: GetClienteById(id)
+-	Obtener cliente por rut: GetClienteByRut(rut)
+-	Guardar Cliente nuevo: SaveCliente( Cliente)
+-	Actualizar Cliente:    UpdateCliente(id, Cliente )
+-	Eliminar Cliente por id:  DeleteCliente( id)
+
+(Se realizaron las mismas operaciones para todas las entidades de la base de datos)
+
+
+
+
+ 
+		Peticiones HTTP
+- KartEntity
+
+GET, Obtiene todos los karts: localhost:8080/karts/
+
+GET, Obtiene kart por id, ej kart 2: localhost:8080/karts/2
+
+POST, Crea kart (id automatica): localhost:8080/karts/
+{
+    "modelo": "Gisonn 2",
+    "estado": "Disponible"
+}
+
+PUT, update de kart por id: localhost:8080/karts/2
+{
+    "modelo": "Gisonn RECAROXZI",
+    "estado": "Disponible"
+}
+
+DELETE, eliminar kart por id: localhost:8080/karts/3
+
+
+
+
+
+- ClienteEntity
+
+GET, Obtiene todos los clientes: localhost:8080/clientes/
+
+GET, Obtiene cliente por id, ej kart 2: localhost:8080/clientes/2
+
+POST, Crea cliente: localhost:8080/clientes/
+{
+    "rut": "21.999.999-9",
+    "nombre": "Pablo",
+    "apellido": "Solari",
+    "correo": "pablito@gmail.com",
+    "telefono": "983836767",
+    "fechaNacimiento": "2005-03-20T13:38:59"
+}
+Recordar formato de fecha DATE --->   "yyyy-MM-ddTHH:mm:ss" , la T solo separa el dia de la hora
+
+PUT, update de cliente por id: localhost:8080/clientes/2
+{
+    "rut": "21.999.999-9",
+    "nombre": "Pablo",
+    "apellido": "Solari",
+    "correo": "ColoColo1925@gmail.com",
+    "telefono": "983836767",
+    "fechaNacimiento": "2005-03-20T13:38:59"
+}
+
+DELETE, eliminar cliente por id: localhost:8080/clientes/1
+
+
+
+
+
+- PlanEntity
+
+GET, Obtiene los planes: localhost:8080/planes/
+
+GET, Obtiene plan por id: localhost:8080/planes/2
+
+POST, Crea plan: localhost:8080/planes/
+{
+    "descripcion": "muy wen plan",
+    "duracionTotal": 25,
+    "precioRegular": 15000,
+    "precioFeriado": 13000,
+    "precioFinSemana": 14000
+}
+
+PUT, update de plan por id: localhost:8080/clientes/1
+{
+    "descripcion": "muy wen plan",
+    "duracionTotal": 25,
+    "precioRegular": 16000,
+    "precioFeriado": 13000,
+    "precioFinSemana": 14000
+}
+
+DELETE, eliminar plan por id: localhost:8080/planes/1
+
+
+
+
+
+- ReservaEntity
+
+GET, Obtiene las reservas: localhost:8080/reservas/
+
+GET, Obtiene reserva por id: localhost:8080/reservas/2
+
+POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2		// Se indican FK en url
+{
+    "estado": "aceptada",
+    "totalPersonas": 50,
+    "fecha": "2023-03-20",
+    "horaInicio": "16:20",
+    "horaFin": "17:00"
+}
+(Si cliente o plan no existe, no crea la reserva)
+
+PUT, update de datos de reserva por id (no cambio de cliente ni plan): localhost:8080/reservas/2
+{
+    "estado": "rechazada",
+    "totalPersonas": 50,
+    "fecha": "2023-03-20",
+    "horaInicio": "16:20",
+    "horaFin": "17:00"
+}
+
+PUT, update de cliente (id) en una reserva por id: localhost:8080/reservas/5/cliente?id_cliente=3
+
+PUT, update de plan (id) en una reserva por id: localhost:8080/reservas/5/plan?id_plan=1
+
+DELETE, eliminar reserva por id (no elimina plan ni cliente): localhost:8080/reservas/1
+
+
+
+
+
+
+
+
