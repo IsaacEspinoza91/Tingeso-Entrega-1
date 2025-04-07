@@ -1,5 +1,7 @@
 package com.kartingRM.AppKartingRM.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,7 +28,8 @@ public class DetalleComprobanteEntity {
     private int montoFinal;
 
     @ManyToOne
-    @MapsId("comprobante")
+    @MapsId("idComprobante")
     @JoinColumn(name = "id_comprobante")
+    @JsonBackReference("comprobante-detalles") // No serializa esta relación
     private ComprobanteEntity comprobante;
 }

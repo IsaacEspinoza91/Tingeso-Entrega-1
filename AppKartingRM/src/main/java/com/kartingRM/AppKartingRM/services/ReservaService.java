@@ -3,13 +3,10 @@ package com.kartingRM.AppKartingRM.services;
 import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.entities.PlanEntity;
 import com.kartingRM.AppKartingRM.entities.ReservaEntity;
-import com.kartingRM.AppKartingRM.repositories.ClienteRepository;
-import com.kartingRM.AppKartingRM.repositories.PlanRepository;
 import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -19,17 +16,16 @@ public class ReservaService {
 
     @Autowired
     private ReservaRepository reservaRepository;
-    @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
-    private PlanRepository planRepository;
-
-    /*
-    @Autowired
-    private ClienteService clienteService;
+    //@Autowired
+    //private ClienteRepository clienteRepository;
+    //@Autowired
+    //private PlanRepository planRepository;
     @Autowired
     private PlanService planService;
-     */
+    @Autowired
+    private ClienteService clienteService;
+
+
 
     public List<ReservaEntity> getReservas(){
         return reservaRepository.findAll();
@@ -51,10 +47,8 @@ public class ReservaService {
     // Considera que no existan reservas en el horario nuevo, ademas de que se ingresa automaticamente
     //    la hora de fin segun el tiempo del plan
     public ReservaEntity createReserva(ReservaEntity reserva, Long idCliente, Long idPlan){
-        //PlanEntity plan = planService.getPlanById(idPlan);
-        PlanEntity plan = planRepository.findById(idPlan).get();
-        //ClienteEntity cliente = clienteService.getClienteById(idCliente);
-        ClienteEntity cliente = clienteRepository.findById(idCliente).get();
+        PlanEntity plan = planService.getPlanById(idPlan);
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
         if (cliente != null && plan != null && reserva.getHoraInicio() != null) {
             reserva.setReservante(cliente);
             reserva.setPlan(plan);
@@ -90,8 +84,7 @@ public class ReservaService {
         // Obtener objeto Reserva
         ReservaEntity reservaOriginal = reservaRepository.findById(idReserva).get();
         // Obtener objeto Cliente
-        //ClienteEntity cliente = clienteService.getClienteById(idCliente);
-        ClienteEntity cliente = clienteRepository.findById(idCliente).get();
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
         reservaOriginal.setReservante(cliente);
         return reservaRepository.save(reservaOriginal);
     }
@@ -100,7 +93,7 @@ public class ReservaService {
         // Obtener objeto Reserva
         ReservaEntity reservaOriginal = reservaRepository.findById(idReserva).get();
         // Obtener objeto Plan
-        PlanEntity plan = planRepository.findById(idPlan).get();
+        PlanEntity plan = planService.getPlanById(idPlan);
         reservaOriginal.setPlan(plan);
         return reservaRepository.save(reservaOriginal);
     }

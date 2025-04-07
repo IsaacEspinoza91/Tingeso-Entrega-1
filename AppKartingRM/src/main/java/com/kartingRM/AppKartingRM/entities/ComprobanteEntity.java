@@ -1,9 +1,14 @@
 package com.kartingRM.AppKartingRM.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "comprobante")
@@ -20,6 +25,10 @@ public class ComprobanteEntity {
 
     @OneToOne
     @JoinColumn(name = "id_reserva")
-    private ReservaEntity reservaEntity;
+    private ReservaEntity reserva;
+
+    @OneToMany(mappedBy = "comprobante", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @JsonManagedReference("comprobante-detalles") // Serializa esta relación
+    private List<DetalleComprobanteEntity> detalles = new ArrayList<>();
 
 }
