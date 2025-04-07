@@ -28,7 +28,7 @@ public class ReservaEntity {
     private int totalPersonas;
 
     @ManyToOne  // El Many se refiere a la entidad actual a one de la de abajo (plan)
-    @JoinColumn(name = "id_plan")
+    @JoinColumn(name = "id_plan", nullable = false)
     private PlanEntity plan;
 
     @ManyToOne

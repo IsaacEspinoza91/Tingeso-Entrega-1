@@ -9,6 +9,9 @@ import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,18 +35,41 @@ public class ReservaService {
         return reservaRepository.findAll();
     }
 
-    public ReservaEntity getReserva(Long id){
+    public ReservaEntity getReservaById(Long id){
         return reservaRepository.findById(id).get();
     }
 
+    public List<ReservaEntity> getReservasByClienteId(Long clienteId) {
+        return reservaRepository.findByReservanteId(clienteId);
+    }
+
+    public List<ReservaEntity> getReservasSolapadasByHoraInicio(Date fecha, LocalTime horaInicio, LocalTime horaFinal){
+        return reservaRepository.findReservasExistentesEnTiempo(fecha, horaInicio, horaFinal);
+    }
+
+    // Funcion que ingresa una reserva a la base de datos
+    // Considera que no existan reservas en el horario nuevo, ademas de que se ingresa automaticamente
+    //    la hora de fin segun el tiempo del plan
     public ReservaEntity createReserva(ReservaEntity reserva, Long idCliente, Long idPlan){
         //PlanEntity plan = planService.getPlanById(idPlan);
         PlanEntity plan = planRepository.findById(idPlan).get();
         //ClienteEntity cliente = clienteService.getClienteById(idCliente);
         ClienteEntity cliente = clienteRepository.findById(idCliente).get();
-        if (cliente != null && plan != null) {
+        if (cliente != null && plan != null && reserva.getHoraInicio() != null) {
             reserva.setReservante(cliente);
             reserva.setPlan(plan);
+
+            // Determinar la hora final sumando los minutos del plan a la hora inicial
+            LocalTime horaFinalCalculada = reserva.getHoraInicio().plusMinutes(reserva.getPlan().getDuracionTotal());
+            reserva.setHoraFin(horaFinalCalculada);
+
+            // Verificar que no existan reservas existentes en el horario determinado
+            List<ReservaEntity> reservasExistentes = getReservasSolapadasByHoraInicio(
+                    reserva.getFecha(), reserva.getHoraInicio(), reserva.getHoraFin());
+            // Si existen reservas en el horario, no sea crea la nueva reserva
+            if (!reservasExistentes.isEmpty()){
+                throw new IllegalStateException("Ya existe una reserva con ese horario");
+            }
             return reservaRepository.save(reserva);
         } else {
             throw new RuntimeException("Cliente no encontrado");

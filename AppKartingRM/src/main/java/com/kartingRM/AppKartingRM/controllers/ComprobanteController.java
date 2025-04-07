@@ -1,6 +1,7 @@
 package com.kartingRM.AppKartingRM.controllers;
 
 import com.kartingRM.AppKartingRM.entities.ComprobanteEntity;
+import com.kartingRM.AppKartingRM.entities.ReservaEntity;
 import com.kartingRM.AppKartingRM.services.ComprobanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comprobante")
+@RequestMapping("/comprobantes")
 public class ComprobanteController {
 
     @Autowired
@@ -27,15 +28,21 @@ public class ComprobanteController {
         return ResponseEntity.ok(comprobante);
     }
 
-    @PostMapping("/")
-    public ResponseEntity<ComprobanteEntity> createComprobante(@RequestBody ComprobanteEntity comprobante) {
-        ComprobanteEntity comprobanteNuevo = comprobanteService.createComprobante(comprobante);
+    @PostMapping
+    public ResponseEntity<ComprobanteEntity> createComprobante(@RequestBody ComprobanteEntity comprobante, @RequestParam Long id_reserva) {
+        ComprobanteEntity comprobanteNuevo = comprobanteService.createComprobante(comprobante, id_reserva);
         return ResponseEntity.ok(comprobanteNuevo);
     }
 
     @PutMapping("/{id_comprobante}")
     public ResponseEntity<ComprobanteEntity> updateComprobante(@PathVariable Long id_comprobante, @RequestBody ComprobanteEntity comprobante) {
         ComprobanteEntity comprobanteActualizado = comprobanteService.updateComprobante(id_comprobante, comprobante);
+        return ResponseEntity.ok(comprobanteActualizado);
+    }
+
+    @PutMapping("/{id_comprobante}/reserva")
+    public ResponseEntity<ComprobanteEntity> updateReservaDeComprobante(@PathVariable Long id_comprobante, @RequestParam Long id_reserva){
+        ComprobanteEntity comprobanteActualizado = comprobanteService.updateReservaDeComprobante(id_comprobante, id_reserva);
         return ResponseEntity.ok(comprobanteActualizado);
     }
 

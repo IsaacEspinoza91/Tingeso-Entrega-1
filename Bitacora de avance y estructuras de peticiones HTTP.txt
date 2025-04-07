@@ -102,7 +102,7 @@ DELETE, eliminar plan por id: localhost:8080/planes/1
 
 
 
-- ReservaEntity
+- ReservaEntity				(Falta comprobaciones)
 
 GET, Obtiene las reservas: localhost:8080/reservas/
 
@@ -133,6 +133,31 @@ PUT, update de plan (id) en una reserva por id: localhost:8080/reservas/5/plan?i
 
 DELETE, eliminar reserva por id (no elimina plan ni cliente): localhost:8080/reservas/1
 
+
+
+
+
+- ComprobanteEntity 		(Falta automatizar que total se copida de detalleComprobante, crear registros de detalleComprobante desde esta entidad?)
+
+GET, Obtiene los comprobantes: localhost:8080/comprobantes/
+
+GET, Obtiene comprobante por id: localhost:8080/comprobantes/2
+
+POST, Crea comprobante: localhost:8080/comprobantes?id_reserva=2		FK en URL
+{
+    "pagado": true,
+    "total": 2502
+}
+
+PUT, update de datos de comprobante por id (no cambio de reseva): localhost:8080/comprobantes/1
+{
+    "pagado": false,
+    "total": 2502
+}
+
+PUT, update de reserva (id) en un comprobante por id: localhost:8080/comprobantes/3/reserva?id_reserva=4
+
+DELETE, eliminar comprobante por id (no elimina reserva): localhost:8080/comprobantes/1
 
 
 
