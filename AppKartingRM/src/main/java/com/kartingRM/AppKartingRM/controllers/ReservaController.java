@@ -3,7 +3,6 @@ package com.kartingRM.AppKartingRM.controllers;
 import com.kartingRM.AppKartingRM.entities.ReservaEntity;
 import com.kartingRM.AppKartingRM.services.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

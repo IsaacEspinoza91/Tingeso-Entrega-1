@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface DetalleComprobanteRepository extends JpaRepository<DetalleComprobanteEntity, DetalleComprobanteId> {
 
-    //List<DetalleComprobanteEntity> findByComprobanteId(Long idComprobante);
     List<DetalleComprobanteEntity> findByComprobanteIdComprobante(Long idComprobante);
 
 

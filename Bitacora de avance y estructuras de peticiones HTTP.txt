@@ -102,11 +102,13 @@ DELETE, eliminar plan por id: localhost:8080/planes/1
 
 
 
-- ReservaEntity				(Falta comprobaciones)
+- ReservaEntity		(Check: comprobacion horario y automatizacion de hora de fin)
 
 GET, Obtiene las reservas: localhost:8080/reservas/
 
 GET, Obtiene reserva por id: localhost:8080/reservas/2
+
+GET, Obtiene las reservas de un cliente segun su id: localhost:8080/reservas/por-cliente/2
 
 POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2		// Se indican FK en url
 {
@@ -138,6 +140,7 @@ DELETE, eliminar reserva por id (no elimina plan ni cliente): localhost:8080/res
 
 
 - ComprobanteEntity 		(Falta automatizar que total se copida de detalleComprobante, crear registros de detalleComprobante desde esta entidad?)
+Solo se puede crear un comprobante por reserva
 
 GET, Obtiene los comprobantes: localhost:8080/comprobantes/
 
@@ -163,5 +166,38 @@ DELETE, eliminar comprobante por id (no elimina reserva): localhost:8080/comprob
 
 
 
+- DetalleComprobanteEntity
+
+GET, Obtiene todos los detalles (No muestra datos de entidad comprobante para evitar recursion en json): localhost:8080/detalleComprobantes/
+
+GET, Obtiene todos los detalles de un comprobante segun su id:  localhost:8080/detalleComprobantes/comprobante/4
+
+GET, Obtiene un detalle segun su id compuesta:    localhost:8080/detalleComprobantes/detalle_especifico?id_detalle=3&id_comprobante=4
+
+POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4
+{
+  "nombre": "p1",
+  "tarifa": 15000,
+  "descuentoGrupo": 3000,
+  "descuentoEspecial": 0,
+  "montoTotal": 15000,
+  "montoIva": 2850,
+  "montoFinal": 12000
+}
+
+
+PUT, update de los datos de un detalle (se indica la id compuesta en la url):   localhost:8080/detalleComprobantes/update?id_detalle=3&id_comprobante=4
+{
+    "idDetalle": null,
+    "nombre": "w1",
+    "tarifa": 9933,
+    "descuentoGrupo": 3000,
+    "descuentoEspecial": 0,
+    "montoTotal": 15000,
+    "montoIva": 2850,
+    "montoFinal": 12000
+}
+
+DELETE, elimina un Detalle segun la ambas ids (Ademas elimina el detalle de la lista de detalles del Comprobante):   localhost:8080/detalleComprobantes/delete?id_detalle=1&id_comprobante=4
 
 

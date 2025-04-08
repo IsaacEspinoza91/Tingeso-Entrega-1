@@ -1,7 +1,6 @@
 package com.kartingRM.AppKartingRM.controllers;
 
 import com.kartingRM.AppKartingRM.entities.ComprobanteEntity;
-import com.kartingRM.AppKartingRM.entities.ReservaEntity;
 import com.kartingRM.AppKartingRM.services.ComprobanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

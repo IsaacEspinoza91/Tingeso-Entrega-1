@@ -1,9 +1,7 @@
 package com.kartingRM.AppKartingRM.controllers;
 
-import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.entities.DetalleComprobanteEntity;
 import com.kartingRM.AppKartingRM.entities.DetalleComprobanteId;
-import com.kartingRM.AppKartingRM.services.ComprobanteService;
 import com.kartingRM.AppKartingRM.services.DetalleComprobanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/detalleComprobantes")
@@ -34,7 +33,8 @@ public class DetalleComprobanteController {
 
     // Obtener detalle en especifico
     @GetMapping("/detalle_especifico")
-    public ResponseEntity<DetalleComprobanteEntity>  getDetalleComprobanteById(@RequestParam Long id_detalle, @RequestParam Long id_comprobante) {
+    public ResponseEntity<DetalleComprobanteEntity>  getDetalleComprobanteById(@RequestParam Long id_detalle,
+                                                                               @RequestParam Long id_comprobante) {
         DetalleComprobanteId idCompuestoDetalle = new DetalleComprobanteId(id_detalle, id_comprobante);
         DetalleComprobanteEntity detalleComprobante = detalleComprobanteService.getDetalleComprobanteById(idCompuestoDetalle);
         return ResponseEntity.ok(detalleComprobante);
@@ -42,7 +42,8 @@ public class DetalleComprobanteController {
 
     // Crear detalle de comprobante
     @PostMapping
-    public ResponseEntity<DetalleComprobanteEntity> createDetalleComprobante(@RequestBody DetalleComprobanteEntity detalleComprobante, @RequestParam Long id_comprobante) {
+    public ResponseEntity<DetalleComprobanteEntity> createDetalleComprobante(@RequestBody DetalleComprobanteEntity detalleComprobante,
+                                                                             @RequestParam Long id_comprobante) {
         DetalleComprobanteEntity detalleNuevo = detalleComprobanteService.createDetalleComprobante(detalleComprobante, id_comprobante);
         //return ResponseEntity.ok(detalleNuevo);
         return ResponseEntity.status(HttpStatus.CREATED).body(detalleNuevo);
@@ -61,35 +62,18 @@ public class DetalleComprobanteController {
 
 
     // Eliminar detalle
-    /*
     @DeleteMapping("/delete")
-    public ResponseEntity<Boolean> deleteDetalle(
-            @RequestParam Long id_comprobante,
-            @RequestParam Long id_detalle) throws Exception {
-        DetalleComprobanteId id = new DetalleComprobanteId(id_detalle, id_comprobante);
-        detalleComprobanteService.deleteDetalle(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteDetalleComprobante(@RequestParam Long id_detalle, @RequestParam Long id_comprobante) {
+        try {
+            detalleComprobanteService.deleteDetalleComprobante(id_detalle, id_comprobante);
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of(
+                            "mensaje", "Error al eliminar detalle de comprobante",
+                            "error", e.getMessage()
+                    ));
+        }
     }
-
-    // Eliminar detalle
-    @DeleteMapping("/delete")
-    public ResponseEntity<Void> deleteDetalle(
-            @RequestParam Long id_comprobante,
-            @RequestParam Long id_detalle) {
-        DetalleComprobanteId id = new DetalleComprobanteId(id_detalle, id_comprobante);
-        detalleComprobanteService.deleteDetalle(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @DeleteMapping("/{id_detalle}/{id_comprobante}")
-    public ResponseEntity<Boolean> deleteDetalleComprobante(@PathVariable Long id_detalle, @PathVariable Long id_comprobante) throws Exception {
-
-        DetalleComprobanteId idCompuestoDetalle = new DetalleComprobanteId(id_detalle, id_comprobante);
-        DetalleComprobanteEntity detalleComprobante = detalleComprobanteService.getDetalleComprobanteById(idCompuestoDetalle);
-
-        detalleComprobanteService.deleteDetalleComprobante(detalleComprobante.getIdDetalle());
-        //detalleComprobanteService.deleteDetalleComprobante(id_detalle,id_comprobante);
-        return ResponseEntity.noContent().build();
-    }*/
 
 }

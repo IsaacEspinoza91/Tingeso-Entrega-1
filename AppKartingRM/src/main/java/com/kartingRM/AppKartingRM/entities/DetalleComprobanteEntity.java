@@ -14,8 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetalleComprobanteEntity {
 
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
     @EmbeddedId
     private DetalleComprobanteId idDetalle;
 
