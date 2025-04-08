@@ -27,11 +27,26 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
             "JOIN r.plan p " +
             "JOIN ComprobanteEntity c ON c.reserva = r " +
             "WHERE YEAR(r.fecha) > :yearInicio OR (YEAR(r.fecha) = :yearInicio AND MONTH(r.fecha) >= :mesInicio) " +
-                   "AND YEAR(r.fecha) < :yearFin OR (YEAR(r.fecha) = :yearFin AND MONTH(r.fecha) <= :mesFin) " +
+                    "AND YEAR(r.fecha) < :yearFin OR (YEAR(r.fecha) = :yearFin AND MONTH(r.fecha) <= :mesFin) " +
             "GROUP BY p.descripcion, YEAR(r.fecha), MONTH(r.fecha) " +
             "ORDER BY YEAR(r.fecha), MONTH(r.fecha)")
     List<Object[]> findIngresosByVueltasAndFlexibleRange(@Param("mesInicio") int mesInicio,
                                                          @Param("yearInicio") int yearInicio,
                                                          @Param("mesFin") int mesFin,
                                                          @Param("yearFin") int yearFin);
+
+
+
+    // Query para obtener los ingresos segun cantidad de personas por reservas. Es utilizada para obtener el reporte de ingresos cantidad de personas
+    @Query("SELECT r.totalPersonas, MONTH(r.fecha), YEAR(r.fecha), SUM(c.total) " +
+            "FROM ReservaEntity r " +
+            "JOIN ComprobanteEntity c ON c.reserva = r " +
+            "WHERE (YEAR(r.fecha) > :yearInicio OR (YEAR(r.fecha) = :yearInicio AND MONTH(r.fecha) >= :mesInicio)) " +
+                    "AND (YEAR(r.fecha) < :yearFin OR (YEAR(r.fecha) = :yearFin AND MONTH(r.fecha) <= :mesFin)) " +
+            "GROUP BY r.totalPersonas, YEAR(r.fecha), MONTH(r.fecha)")
+    List<Object[]> findIngresosByRangoPersonas(
+            @Param("mesInicio") int mesInicio,
+            @Param("yearInicio") int yearInicio,
+            @Param("mesFin") int mesFin,
+            @Param("yearFin") int yearFin);
 }

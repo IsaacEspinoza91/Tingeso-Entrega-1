@@ -1,5 +1,6 @@
 package com.kartingRM.AppKartingRM.controllers;
 
+import com.kartingRM.AppKartingRM.entities.ReporteIngresosPersonasDTO;
 import com.kartingRM.AppKartingRM.entities.ReporteIngresosVueltasDTO;
 import com.kartingRM.AppKartingRM.services.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,22 @@ public class ReporteController {
                                                                                      @RequestParam int mes_fin,
                                                                                      @RequestParam int anio_fin) {
 
-        List<ReporteIngresosVueltasDTO> reporte = reservaService.generarReporteIngresosVueltas(mes_inicio, anio_inicio, mes_fin, anio_fin);
+        List<ReporteIngresosVueltasDTO> reporte = reservaService.generarReporteIngresosVueltas(
+                mes_inicio, anio_inicio, mes_fin, anio_fin);
+        return ResponseEntity.ok(reporte);
+    }
+
+
+
+
+    @GetMapping("/ingresos-por-personas")
+    public ResponseEntity<List<ReporteIngresosPersonasDTO>> getReporteIngresosPorPersonas(@RequestParam int mes_inicio,
+                                                                                          @RequestParam int anio_inicio,
+                                                                                          @RequestParam int mes_fin,
+                                                                                          @RequestParam int anio_fin) {
+
+        List<ReporteIngresosPersonasDTO> reporte = reservaService.generarReporteIngresosPorPersonas(
+                mes_inicio, anio_inicio, mes_fin, anio_fin);
         return ResponseEntity.ok(reporte);
     }
 }

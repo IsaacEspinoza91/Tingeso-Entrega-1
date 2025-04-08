@@ -225,4 +225,4 @@ DELETE, elimina todoas las reservaKart segun id de reserva: localhost:8080/reser
 DTO
 - Reporte de ingresos por numero de vueltas: localhost:8080/reportes/ingresos-por-vueltas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
 
-- Reporte de ingresos por numero de personas: 
+- Reporte de ingresos por numero de personas: localhost:8080/reportes/ingresos-por-personas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025

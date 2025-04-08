@@ -1,9 +1,6 @@
 package com.kartingRM.AppKartingRM.services;
 
-import com.kartingRM.AppKartingRM.entities.ClienteEntity;
-import com.kartingRM.AppKartingRM.entities.PlanEntity;
-import com.kartingRM.AppKartingRM.entities.ReporteIngresosVueltasDTO;
-import com.kartingRM.AppKartingRM.entities.ReservaEntity;
+import com.kartingRM.AppKartingRM.entities.*;
 import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +20,6 @@ public class ReservaService {
     private PlanService planService;
     @Autowired
     private ClienteService clienteService;
-
 
 
     // Obtener todas las reservas
@@ -128,7 +125,7 @@ public class ReservaService {
         List<Object[]> resultados = reservaRepository.findIngresosByVueltasAndFlexibleRange(
                 mesInicio, anioInicio, mesFin, anioFin);
 
-        return procesarResultados(resultados, mesInicio, anioInicio, mesFin, anioFin);
+        return procesarResultadosReporteIngresosVueltas(resultados, mesInicio, anioInicio, mesFin, anioFin);
     }
 
 
@@ -136,9 +133,9 @@ public class ReservaService {
     // Funcion privada que procesa los datos para obtener los ingresos por plan de forma estructurada.
     //   Considera el caso en que no hayan ingresos en algun mes y toma ingresos 0. Ademas de generar los
     //   nombres de los meses y no numeros.
-    private List<ReporteIngresosVueltasDTO> procesarResultados(List<Object[]> resultados,
-                                                               int mesInicio, int anioInicio,
-                                                               int mesFin, int anioFin) {
+    private List<ReporteIngresosVueltasDTO> procesarResultadosReporteIngresosVueltas(List<Object[]> resultados,
+                                                                                     int mesInicio, int anioInicio,
+                                                                                     int mesFin, int anioFin) {
 
         // Crear lista con Strings de nombres de mese-anio entre dos fechas
         List<String> mesesEnRango = generarMesesEnRango(mesInicio, anioInicio, mesFin, anioFin);
@@ -150,7 +147,7 @@ public class ReservaService {
         //   de meses sin ingresos con valores 0
         Map<String, ReporteIngresosVueltasDTO> reporteMap = new LinkedHashMap<>();
 
-        // Inicializar todos los planes con meses en 0 de ingresos
+        // Inicializar todos los planes con ingresos por mes
         planes.forEach(plan -> {
             Map<String, Double> ingresosPorMes = new LinkedHashMap<>();
             mesesEnRango.forEach(mes -> ingresosPorMes.put(mes, 0.0));
@@ -235,4 +232,79 @@ public class ReservaService {
             throw new IllegalArgumentException("Los meses deben estar entre 1 (Enero) y 12 (Diciembre)");
         }
     }
+
+
+
+    // Generar Reporte de ingresos segun grupos de personas
+    public List<ReporteIngresosPersonasDTO> generarReporteIngresosPorPersonas(int mesInicio, int yearInicio,
+                                                                              int mesFin, int yearFin) {
+        // Validamos que las fechas ingresadas sean validas temporalmente
+        validarRangoFechas(mesInicio, yearInicio, mesFin, yearFin);
+        List<Object[]> resultados = reservaRepository.findIngresosByRangoPersonas(mesInicio, yearInicio, mesFin, yearFin);
+        return procesarResultadosReporteIngresosPersonas(resultados, mesInicio, yearInicio, mesFin, yearFin);
+    }
+
+
+    // Funcion privada que procesa los datos para obtener los ingresos por cantidad de personas de forma estructurada.
+    //   Considera el caso de meses con ingresos 0. Ademas de generar los nombres de los meses y no numeros.
+    private List<ReporteIngresosPersonasDTO> procesarResultadosReporteIngresosPersonas(List<Object[]> resultados,
+                                                                int mesInicio, int anioInicio, int mesFin, int anioFin) {
+        // Generar Lista de String con nombres de mes-anio entre dos fechas
+        List<String> mesesEnRango = generarMesesEnRango(mesInicio, anioInicio, mesFin, anioFin);
+
+        // Definir los rangos de personas segun cantidad de forma creciente
+        Map<String, Predicate<Integer>> rangos = new LinkedHashMap<>();
+        rangos.put("1-2 personas", cant -> cant >= 1 && cant <= 2);
+        rangos.put("3-5 personas", cant -> cant >= 3 && cant <= 5);
+        rangos.put("6-10 personas", cant -> cant >= 6 && cant <= 10);
+        rangos.put("11-15 personas", cant -> cant >= 11 && cant <= 15);
+
+        // Inicializar estructura
+        Map<String, ReporteIngresosPersonasDTO> reporteMap = new LinkedHashMap<>();
+        rangos.keySet().forEach(rango -> {
+            Map<String, Double> ingresosPorMes = new LinkedHashMap<>();
+            mesesEnRango.forEach(mes -> ingresosPorMes.put(mes, 0.0));
+            reporteMap.put(rango, new ReporteIngresosPersonasDTO(rango, ingresosPorMes, 0.0, false));
+        });
+
+        // Llenar con los datos reales obtenidos de la base de datos
+        for (Object[] resultado : resultados) {
+            int cantidadPersonas = (int) resultado[0];
+            String mesKey = obtenerNombreMes((int) resultado[1]) + "-" + resultado[2];
+            double total = ((Number) resultado[3]).doubleValue();
+
+            // Determinar a que rango pertenece
+            for (Map.Entry<String, Predicate<Integer>> entry : rangos.entrySet()) {
+                if (entry.getValue().test(cantidadPersonas)) {
+                    // Calcular total de la fila (cantidad personas)
+                    ReporteIngresosPersonasDTO dto = reporteMap.get(entry.getKey());
+                    dto.getIngresosPorMes().merge(mesKey, total, Double::sum);
+                    dto.setTotal(dto.getTotal() + total);
+                    break;
+                }
+            }
+        }
+
+        // Calcular total general
+        Map<String, Double> totalesPorMes = new LinkedHashMap<>();
+        // Inicializamos HashMap con los meses y con montos 0
+        mesesEnRango.forEach(mes -> totalesPorMes.put(mes, 0.0));
+
+        // Calculamos los totales generales segun meses
+        reporteMap.values().forEach(dto -> {
+            dto.getIngresosPorMes().forEach((mes, valor) -> {
+                totalesPorMes.merge(mes, valor, Double::sum);
+            });
+        });
+
+        double granTotal = totalesPorMes.values().stream().mapToDouble(Double::doubleValue).sum();
+
+        // Crear reporte final
+        List<ReporteIngresosPersonasDTO> reporteFinal = new ArrayList<>(reporteMap.values());
+        reporteFinal.add(new ReporteIngresosPersonasDTO(
+                "TOTAL GENERAL", totalesPorMes, granTotal, true));
+
+        return reporteFinal;
+    }
+
 }
