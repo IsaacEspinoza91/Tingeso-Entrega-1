@@ -201,3 +201,20 @@ PUT, update de los datos de un detalle (se indica la id compuesta en la url):   
 DELETE, elimina un Detalle segun la ambas ids (Ademas elimina el detalle de la lista de detalles del Comprobante):   localhost:8080/detalleComprobantes/delete?id_detalle=1&id_comprobante=4
 
 
+
+
+
+- ReservaKart
+
+GET, obtiene todas las reservasKart:   localhost:8080/reservaKarts/
+
+GET, obtiene todos los kart segun id de reserva:   localhost:8080/reservaKarts/reserva/3
+
+GET, obtiene todos las reservas segun id de kart:  localhost:8080/reservaKarts/kart/3
+
+POST, crea reservaKart:  localhost:8080/reservaKarts?id_reserva=3&id_kart=7
+
+DELETE, elimina reservakart segun ambos ids:	localhost:8080/reservaKarts/delete?id_reserva=4&id_kart=7
+
+DELETE, elimina todoas las reservaKart segun id de reserva: localhost:8080/reservaKarts/delete/reserva/3
+
