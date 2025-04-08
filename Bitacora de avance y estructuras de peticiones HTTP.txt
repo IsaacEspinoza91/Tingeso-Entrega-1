@@ -23,7 +23,7 @@ GET, Obtiene kart por id, ej kart 2: localhost:8080/karts/2
 
 POST, Crea kart (id automatica): localhost:8080/karts/
 {
-    "modelo": "Gisonn 2",
+    "modelo": "Sodikart RT8",
     "estado": "Disponible"
 }
 
@@ -54,7 +54,8 @@ POST, Crea cliente: localhost:8080/clientes/
     "telefono": "983836767",
     "fechaNacimiento": "2005-03-20T13:38:59"
 }
-Recordar formato de fecha DATE --->   "yyyy-MM-ddTHH:mm:ss" , la T solo separa el dia de la hora
+Recordar formato de fecha DATE --->   "yyyy-MM-ddTHH:mm:ss" , la T solo separa el dia de la hora,
+Tambien se puede evitar lo despues de la T "yyyy-MM-dd"
 
 PUT, update de cliente por id: localhost:8080/clientes/2
 {
@@ -80,20 +81,19 @@ GET, Obtiene plan por id: localhost:8080/planes/2
 
 POST, Crea plan: localhost:8080/planes/
 {
-    "descripcion": "muy wen plan",
-    "duracionTotal": 25,
-    "precioRegular": 15000,
-    "precioFeriado": 13000,
-    "precioFinSemana": 14000
+    "descripcion": "20 vueltas o max 20 min",
+    "duracionTotal": 40,
+    "precioRegular": 25000,
+    "precioFeriado": 22000,
+    "precioFinSemana": 23000
 }
-
 PUT, update de plan por id: localhost:8080/clientes/1
 {
-    "descripcion": "muy wen plan",
-    "duracionTotal": 25,
-    "precioRegular": 16000,
-    "precioFeriado": 13000,
-    "precioFinSemana": 14000
+    "descripcion": "10 vueltas o max 10 min",
+    "duracionTotal": 30,
+    "precioRegular": 15000,
+    "precioFinSemana": 14000,
+    "precioFeriado": 13000
 }
 
 DELETE, eliminar plan por id: localhost:8080/planes/1
@@ -113,10 +113,10 @@ GET, Obtiene las reservas de un cliente segun su id: localhost:8080/reservas/por
 POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2		// Se indican FK en url
 {
     "estado": "aceptada",
-    "totalPersonas": 50,
-    "fecha": "2023-03-20",
-    "horaInicio": "16:20",
-    "horaFin": "17:00"
+    "totalPersonas": 4,
+    "fecha": "2025-08-04",
+    "horaInicio": "14:00",
+    "horaFin": null
 }
 (Si cliente o plan no existe, no crea la reserva)
 
@@ -218,3 +218,11 @@ DELETE, elimina reservakart segun ambos ids:	localhost:8080/reservaKarts/delete?
 
 DELETE, elimina todoas las reservaKart segun id de reserva: localhost:8080/reservaKarts/delete/reserva/3
 
+
+
+
+
+DTO
+- Reporte de ingresos por numero de vueltas: localhost:8080/reportes/ingresos-por-vueltas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
+
+- Reporte de ingresos por numero de personas: 

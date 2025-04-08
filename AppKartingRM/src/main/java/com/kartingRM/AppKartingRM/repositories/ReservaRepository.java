@@ -19,4 +19,19 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
     List<ReservaEntity> findReservasExistentesEnTiempo(@Param("fecha") Date fecha,
                                                        @Param("horaInicio") LocalTime horaInicio,
                                                        @Param("horaFin") LocalTime horaFin);
+
+
+    // Query para obtener los ingresos segun plan en un rango de tiempo. Es utiliza para obtener el reporte de ingresos segun plan
+    @Query("SELECT p.descripcion, MONTH(r.fecha) as mes, YEAR(r.fecha) as anio, SUM(c.total) as total " +
+            "FROM ReservaEntity r " +
+            "JOIN r.plan p " +
+            "JOIN ComprobanteEntity c ON c.reserva = r " +
+            "WHERE YEAR(r.fecha) > :yearInicio OR (YEAR(r.fecha) = :yearInicio AND MONTH(r.fecha) >= :mesInicio) " +
+                   "AND YEAR(r.fecha) < :yearFin OR (YEAR(r.fecha) = :yearFin AND MONTH(r.fecha) <= :mesFin) " +
+            "GROUP BY p.descripcion, YEAR(r.fecha), MONTH(r.fecha) " +
+            "ORDER BY YEAR(r.fecha), MONTH(r.fecha)")
+    List<Object[]> findIngresosByVueltasAndFlexibleRange(@Param("mesInicio") int mesInicio,
+                                                         @Param("yearInicio") int yearInicio,
+                                                         @Param("mesFin") int mesFin,
+                                                         @Param("yearFin") int yearFin);
 }
