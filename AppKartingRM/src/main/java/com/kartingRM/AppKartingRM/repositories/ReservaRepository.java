@@ -36,7 +36,6 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
                                                          @Param("yearFin") int yearFin);
 
 
-
     // Query para obtener los ingresos segun cantidad de personas por reservas. Es utilizada para obtener el reporte de ingresos cantidad de personas
     @Query("SELECT r.totalPersonas, MONTH(r.fecha), YEAR(r.fecha), SUM(c.total) " +
             "FROM ReservaEntity r " +
@@ -44,9 +43,8 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
             "WHERE (YEAR(r.fecha) > :yearInicio OR (YEAR(r.fecha) = :yearInicio AND MONTH(r.fecha) >= :mesInicio)) " +
                     "AND (YEAR(r.fecha) < :yearFin OR (YEAR(r.fecha) = :yearFin AND MONTH(r.fecha) <= :mesFin)) " +
             "GROUP BY r.totalPersonas, YEAR(r.fecha), MONTH(r.fecha)")
-    List<Object[]> findIngresosByRangoPersonas(
-            @Param("mesInicio") int mesInicio,
-            @Param("yearInicio") int yearInicio,
-            @Param("mesFin") int mesFin,
-            @Param("yearFin") int yearFin);
+    List<Object[]> findIngresosByRangoPersonas(@Param("mesInicio") int mesInicio,
+                                               @Param("yearInicio") int yearInicio,
+                                               @Param("mesFin") int mesFin,
+                                               @Param("yearFin") int yearFin);
 }
