@@ -5,8 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "reserva")
@@ -21,7 +21,7 @@ public class ReservaEntity {
     private Long idReserva;
 
     @Temporal(TemporalType.DATE)
-    private Date fecha;
+    private LocalDate fecha;
     private LocalTime horaInicio;
     private LocalTime horaFin;
     private String estado;

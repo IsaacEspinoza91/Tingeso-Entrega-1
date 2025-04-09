@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -15,8 +15,10 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
 
     List<ReservaEntity> findByReservanteId(Long id);
 
-    @Query("SELECT r FROM ReservaEntity r WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio)")
-    List<ReservaEntity> findReservasExistentesEnTiempo(@Param("fecha") Date fecha,
+    @Query("SELECT r " +
+            "FROM ReservaEntity r " +
+            "WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio)")
+    List<ReservaEntity> findReservasExistentesEnTiempo(@Param("fecha") LocalDate fecha,
                                                        @Param("horaInicio") LocalTime horaInicio,
                                                        @Param("horaFin") LocalTime horaFin);
 
@@ -47,4 +49,15 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
                                                @Param("yearInicio") int yearInicio,
                                                @Param("mesFin") int mesFin,
                                                @Param("yearFin") int yearFin);
+
+
+    // Query para obtener las reservas con estado "confirmada" en un rango de dos fechas de inicio y fin. Es utilizada
+    //   para obtener el rack semanal de reservas
+    @Query("SELECT r FROM ReservaEntity r " +
+            "JOIN FETCH r.reservante " +
+            "WHERE r.fecha BETWEEN :inicio AND :fin AND r.estado = 'confirmada' " +
+            "ORDER BY r.fecha, r.horaInicio")
+    List<ReservaEntity> findReservasConfirmadasPorRangoFechas(@Param("inicio") LocalDate inicio,
+                                                              @Param("fin") LocalDate fin);
+
 }

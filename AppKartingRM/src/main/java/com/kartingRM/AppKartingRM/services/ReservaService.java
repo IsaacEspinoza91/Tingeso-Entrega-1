@@ -5,6 +5,7 @@ import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -35,7 +36,7 @@ public class ReservaService {
     }
 
     // Obtener reservas existentes entre dos horas de un dia
-    public List<ReservaEntity> getReservasSolapadasByHoraInicio(Date fecha, LocalTime horaInicio, LocalTime horaFinal){
+    public List<ReservaEntity> getReservasSolapadasByHoraInicio(LocalDate fecha, LocalTime horaInicio, LocalTime horaFinal){
         return reservaRepository.findReservasExistentesEnTiempo(fecha, horaInicio, horaFinal);
     }
 

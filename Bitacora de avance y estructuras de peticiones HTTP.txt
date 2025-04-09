@@ -52,10 +52,9 @@ POST, Crea cliente: localhost:8080/clientes/
     "apellido": "Solari",
     "correo": "pablito@gmail.com",
     "telefono": "983836767",
-    "fechaNacimiento": "2005-03-20T13:38:59"
+    "fechaNacimiento": "2005-03-20"
 }
-Recordar formato de fecha DATE --->   "yyyy-MM-ddTHH:mm:ss" , la T solo separa el dia de la hora,
-Tambien se puede evitar lo despues de la T "yyyy-MM-dd"
+Recordar formato de fecha LocalDate --->   "yyyy-MM-d"
 
 PUT, update de cliente por id: localhost:8080/clientes/2
 {
@@ -64,7 +63,7 @@ PUT, update de cliente por id: localhost:8080/clientes/2
     "apellido": "Solari",
     "correo": "ColoColo1925@gmail.com",
     "telefono": "983836767",
-    "fechaNacimiento": "2005-03-20T13:38:59"
+    "fechaNacimiento": "2005-03-20"
 }
 
 DELETE, eliminar cliente por id: localhost:8080/clientes/1
@@ -112,7 +111,7 @@ GET, Obtiene las reservas de un cliente segun su id: localhost:8080/reservas/por
 
 POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2		// Se indican FK en url
 {
-    "estado": "aceptada",
+    "estado": "confirmada",
     "totalPersonas": 4,
     "fecha": "2025-08-04",
     "horaInicio": "14:00",
@@ -223,6 +222,13 @@ DELETE, elimina todoas las reservaKart segun id de reserva: localhost:8080/reser
 
 
 DTO
+Reportes
 - Reporte de ingresos por numero de vueltas: localhost:8080/reportes/ingresos-por-vueltas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
 
 - Reporte de ingresos por numero de personas: localhost:8080/reportes/ingresos-por-personas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
+
+
+RackSemanal
+- Obtener las reservas de una semana segun el dia por nombre (lunes, martes, ...): localhost:8080/rackSemanal/?semana=0
+El valor indica el numero de semana: 0->semana actual, 1-> prox semana, 2-> prox 2 semana, -1-> semana anterior.
+En caso de no indicar el valor, retorna la semana actual    localhost:8080/rackSemanal/

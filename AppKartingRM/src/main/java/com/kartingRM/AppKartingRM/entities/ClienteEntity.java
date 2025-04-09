@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "cliente")
@@ -26,6 +26,5 @@ public class ClienteEntity {
     private String telefono;
 
     @Temporal(TemporalType.DATE)
-    private Date fechaNacimiento;
-
+    private LocalDate fechaNacimiento;
 }
