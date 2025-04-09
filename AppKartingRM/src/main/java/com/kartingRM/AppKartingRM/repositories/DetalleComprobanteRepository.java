@@ -14,7 +14,17 @@ public interface DetalleComprobanteRepository extends JpaRepository<DetalleCompr
 
     List<DetalleComprobanteEntity> findByComprobanteIdComprobante(Long idComprobante);
 
+    DetalleComprobanteEntity findByClienteIdAndComprobanteIdComprobante(Long clienteId, Long comprobanteId);
 
-    @Query("SELECT MAX(d.idDetalle.idDetalle) FROM DetalleComprobanteEntity d WHERE d.idDetalle.idComprobante = :idComprobante")
+    @Query("SELECT MAX(d.idDetalle.idDetalle) " +
+            "FROM DetalleComprobanteEntity d " +
+            "WHERE d.idDetalle.idComprobante = :idComprobante")
     Long findMaxIdDetalleByIdComprobante(@Param("idComprobante") Long idComprobante);
+
+
+    // Buscar todos los detallesComprobante por id de cliente
+    @Query("SELECT d " +
+            "FROM DetalleComprobanteEntity d " +
+            "WHERE d.cliente.id = :clienteId")
+    List<DetalleComprobanteEntity> findByClienteId(@Param("clienteId") Long clienteId);
 }

@@ -173,9 +173,12 @@ GET, Obtiene todos los detalles de un comprobante segun su id:  localhost:8080/d
 
 GET, Obtiene un detalle segun su id compuesta:    localhost:8080/detalleComprobantes/detalle_especifico?id_detalle=3&id_comprobante=4
 
-POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4
+GET, Obtiene un detalle segun id de cliente e id de comprobante:   localhost:8080/detalleComprobantes?id_cliente=2&id_comprobante=1
+
+GET, Obtiene todos los detalles de un cliente segun id:  localhost:8080/detalleComprobantes/cliente/2
+
+POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4&id_cliente=2
 {
-  "nombre": "p1",
   "tarifa": 15000,
   "descuentoGrupo": 3000,
   "descuentoEspecial": 0,
@@ -185,10 +188,9 @@ POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4
 }
 
 
-PUT, update de los datos de un detalle (se indica la id compuesta en la url):   localhost:8080/detalleComprobantes/update?id_detalle=3&id_comprobante=4
+PUT, update de los datos de un detalle (se indica la id compuesta en la url):   localhost:8080/detalleComprobantes/update?id_detalle=3&id_comprobante=4&id_cliente=1
 {
     "idDetalle": null,
-    "nombre": "w1",
     "tarifa": 9933,
     "descuentoGrupo": 3000,
     "descuentoEspecial": 0,

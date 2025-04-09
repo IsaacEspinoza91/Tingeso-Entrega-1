@@ -15,9 +15,10 @@ public interface ReservaRepository extends JpaRepository<ReservaEntity, Long> {
 
     List<ReservaEntity> findByReservanteId(Long id);
 
+    // Query para obtener las reservas del tipo confimada en una fecha entre dos horarios especificos
     @Query("SELECT r " +
             "FROM ReservaEntity r " +
-            "WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio)")
+            "WHERE r.fecha = :fecha AND (:horaInicio < r.horaFin AND :horaFin > r.horaInicio) AND r.estado = 'confirmada'")
     List<ReservaEntity> findReservasExistentesEnTiempo(@Param("fecha") LocalDate fecha,
                                                        @Param("horaInicio") LocalTime horaInicio,
                                                        @Param("horaFin") LocalTime horaFin);

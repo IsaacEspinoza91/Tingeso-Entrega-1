@@ -40,12 +40,27 @@ public class DetalleComprobanteController {
         return ResponseEntity.ok(detalleComprobante);
     }
 
-    // Crear detalle de comprobante
+    @GetMapping("/cliente/{id_cliente}")
+    public ResponseEntity<List<DetalleComprobanteEntity>> getDetalleComprobantesByClienteId(@PathVariable Long id_cliente) {
+        List<DetalleComprobanteEntity> detalles = detalleComprobanteService.getDetalleComprobantesByClienteId(id_cliente);
+        return ResponseEntity.ok(detalles);
+    }
+
+    // Obtener detalle segun id de cliente e id de comprobante
+    @GetMapping
+    public ResponseEntity<DetalleComprobanteEntity> getDetalleComprobanteByClienteIdAndComprobanteId(@RequestParam Long id_cliente,
+                                                                                                     @RequestParam Long id_comprobante) {
+        DetalleComprobanteEntity detalle = detalleComprobanteService.getDetalleComprobanteByClienteIdAndComprobanteId(id_cliente, id_comprobante);
+        return ResponseEntity.ok(detalle);
+    }
+
+    // Crear detalle de comprobante, indicando id de comprobante e id de cliente
     @PostMapping
     public ResponseEntity<DetalleComprobanteEntity> createDetalleComprobante(@RequestBody DetalleComprobanteEntity detalleComprobante,
-                                                                             @RequestParam Long id_comprobante) {
-        DetalleComprobanteEntity detalleNuevo = detalleComprobanteService.createDetalleComprobante(detalleComprobante, id_comprobante);
-        //return ResponseEntity.ok(detalleNuevo);
+                                                                             @RequestParam Long id_comprobante,
+                                                                             @RequestParam Long id_cliente) {
+        DetalleComprobanteEntity detalleNuevo = detalleComprobanteService.createDetalleComprobante(
+                detalleComprobante, id_comprobante, id_cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(detalleNuevo);
     }
 
@@ -54,9 +69,10 @@ public class DetalleComprobanteController {
     @PutMapping("/update")
     public ResponseEntity<DetalleComprobanteEntity> updateDetalle(@RequestParam Long id_comprobante,
                                                                   @RequestParam Long id_detalle,
+                                                                  @RequestParam Long id_cliente,
                                                                   @RequestBody DetalleComprobanteEntity detalle) {
         DetalleComprobanteId id = new DetalleComprobanteId(id_detalle, id_comprobante);
-        DetalleComprobanteEntity detalleActualizado = detalleComprobanteService.updateDetalle(id, detalle);
+        DetalleComprobanteEntity detalleActualizado = detalleComprobanteService.updateDetalle(id, detalle, id_cliente);
         return ResponseEntity.ok(detalleActualizado);
     }
 

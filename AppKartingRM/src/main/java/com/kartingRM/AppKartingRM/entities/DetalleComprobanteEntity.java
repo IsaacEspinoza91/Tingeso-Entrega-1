@@ -16,7 +16,6 @@ public class DetalleComprobanteEntity {
     @EmbeddedId
     private DetalleComprobanteId idDetalle;
 
-    private String nombre;
     private int tarifa;
     private int descuentoGrupo;
     private int descuentoEspecial;
@@ -29,4 +28,9 @@ public class DetalleComprobanteEntity {
     @JoinColumn(name = "id_comprobante")
     @JsonBackReference("comprobante-detalles") // No serializa esta relación
     private ComprobanteEntity comprobante;
+
+    // Relación UNIDIRECCIONAL con Cliente
+    @ManyToOne
+    @JoinColumn(name = "id_cliente", nullable = false)
+    private ClienteEntity cliente;
 }

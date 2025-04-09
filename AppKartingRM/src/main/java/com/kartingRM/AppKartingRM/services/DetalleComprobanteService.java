@@ -1,5 +1,6 @@
 package com.kartingRM.AppKartingRM.services;
 
+import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.entities.ComprobanteEntity;
 import com.kartingRM.AppKartingRM.entities.DetalleComprobanteEntity;
 import com.kartingRM.AppKartingRM.entities.DetalleComprobanteId;
@@ -17,6 +18,8 @@ public class DetalleComprobanteService {
     private DetalleComprobanteRepository detalleComprobanteRepository;
     @Autowired
     private ComprobanteService comprobanteService;
+    @Autowired
+    private ClienteService clienteService;
 
     // Obtener todos los detalles
     public List<DetalleComprobanteEntity> getDetalleComprobantes() {
@@ -33,17 +36,31 @@ public class DetalleComprobanteService {
         return detalleComprobanteRepository.findById(id).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
     }
 
+    // Obtener todos los detallesComprobantes de un cliente
+    public List<DetalleComprobanteEntity> getDetalleComprobantesByClienteId(Long clienteId) {
+        return detalleComprobanteRepository.findByClienteId(clienteId);
+    }
+
+    // Obtener el detalleComprobante de un cliente y comprobante especifo
+    public DetalleComprobanteEntity getDetalleComprobanteByClienteIdAndComprobanteId(Long clienteId, Long comprobanteId) {
+        return detalleComprobanteRepository.findByClienteIdAndComprobanteIdComprobante(clienteId, comprobanteId);
+    }
+
     // Crear nuevo detalle
     @Transactional
-    public DetalleComprobanteEntity createDetalleComprobante(DetalleComprobanteEntity detalle, Long idComprobante) {
+    public DetalleComprobanteEntity createDetalleComprobante(DetalleComprobanteEntity detalle, Long idComprobante, Long idCliente) {
         ComprobanteEntity comprobante = comprobanteService.getComprobanteById(idComprobante);
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
 
-        // Configurar relación bidireccional
-        detalle.setComprobante(comprobante);
-        DetalleComprobanteId id = new DetalleComprobanteId();
+        // Configurar relación bidireccional Comprobante
+        detalle.setComprobante(comprobante);                    // Add el comprobante al detalle
+        DetalleComprobanteId id = new DetalleComprobanteId();   // Creamos nueva id del detalle
         id.setIdComprobante(idComprobante);
         id.setIdDetalle(generarNuevoIdDetalle(idComprobante));
-        detalle.setIdDetalle(id);
+        detalle.setIdDetalle(id);                               // Setemos id al detalle
+
+        // Configurar Relación unidireccional Cliente
+        detalle.setCliente(cliente);
 
         DetalleComprobanteEntity detalleGuardado = detalleComprobanteRepository.save(detalle);
 
@@ -55,17 +72,18 @@ public class DetalleComprobanteService {
 
     // Actualizar detalle existente
     @Transactional
-    public DetalleComprobanteEntity updateDetalle(DetalleComprobanteId id, DetalleComprobanteEntity detalle) {
+    public DetalleComprobanteEntity updateDetalle(DetalleComprobanteId id, DetalleComprobanteEntity detalle, Long idCliente) {
         DetalleComprobanteEntity detalleExistente = getDetalleComprobanteById(id);
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
 
         // Actualizar campos de detalle
-        detalleExistente.setNombre(detalle.getNombre());
         detalleExistente.setTarifa(detalle.getTarifa());
         detalleExistente.setDescuentoGrupo(detalle.getDescuentoGrupo());
         detalleExistente.setDescuentoEspecial(detalle.getDescuentoEspecial());
         detalleExistente.setMontoTotal(detalle.getMontoTotal());
         detalleExistente.setMontoIva(detalle.getMontoIva());
         detalleExistente.setMontoFinal(detalle.getMontoFinal());
+        detalleExistente.setCliente(cliente);
 
         DetalleComprobanteEntity detalleActualizado = detalleComprobanteRepository.save(detalleExistente);
 
