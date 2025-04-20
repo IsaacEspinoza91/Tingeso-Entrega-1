@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/clientes")
@@ -43,5 +44,19 @@ public class ClienteController {
     public ResponseEntity<Boolean> deleteCliente(@PathVariable Long id_cliente) throws Exception {
         clienteService.deleteCliente(id_cliente);
         return ResponseEntity.noContent().build();
+    }
+
+    // Peticion GET para obtener la cantidad de visitas de un cliente segun id en un mes en particular
+    @GetMapping("/{id_cliente}/cantidad_visitas")
+    public ResponseEntity<Map<String, Object>> getVisitasPorMes(@PathVariable Long id_cliente,
+                                                                @RequestParam int anio,
+                                                                @RequestParam int mes) {
+        int cantidad = clienteService.obtenerVecesUtilizadoKarting(id_cliente, anio, mes);
+        return ResponseEntity.ok(Map.of(
+                "id_cliente", id_cliente,
+                "anio", anio,
+                "mes", mes,
+                "visitas", cantidad
+        ));
     }
 }

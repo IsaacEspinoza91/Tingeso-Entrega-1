@@ -27,4 +27,12 @@ public interface DetalleComprobanteRepository extends JpaRepository<DetalleCompr
             "FROM DetalleComprobanteEntity d " +
             "WHERE d.cliente.id = :clienteId")
     List<DetalleComprobanteEntity> findByClienteId(@Param("clienteId") Long clienteId);
+
+
+    // Obtener la cantidad de veces que un cliente utiliza el karting en un mes especifico
+    @Query("SELECT COUNT(d) FROM DetalleComprobanteEntity d " +
+            "WHERE d.cliente.id = :clienteId " +
+            "AND YEAR(d.comprobante.reserva.fecha) = :anio " +
+            "AND MONTH(d.comprobante.reserva.fecha) = :mes")
+    int countVisitasByClienteAndMonth(@Param("clienteId") Long clienteId, @Param("anio") int anio, @Param("mes") int mes);
 }

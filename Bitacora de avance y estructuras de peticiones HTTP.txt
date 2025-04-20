@@ -68,6 +68,9 @@ PUT, update de cliente por id: localhost:8080/clientes/2
 
 DELETE, eliminar cliente por id: localhost:8080/clientes/1
 
+Otros:
+GET, Obtiene la cantidad de veces que el cliente (id) ha visitado el karting segun mes y anio: localhost:8080/clientes/1/cantidad_visitas?anio=2025&mes=5
+
 
 
 

@@ -2,8 +2,11 @@ package com.kartingRM.AppKartingRM.services;
 
 import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.repositories.ClienteRepository;
+import com.kartingRM.AppKartingRM.repositories.DetalleComprobanteRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
@@ -12,6 +15,8 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+    @Autowired
+    private DetalleComprobanteRepository detalleComprobanteRepository;
 
     public ArrayList<ClienteEntity> getClientes(){
         return (ArrayList<ClienteEntity>) clienteRepository.findAll();
@@ -44,5 +49,19 @@ public class ClienteService {
 
     }
 
+
+    // Obtiene la cantidad de veces que el cliente ha visitado el karting segun el mes
+    @Transactional(readOnly = true)
+    public int obtenerVecesUtilizadoKarting(Long clienteId, int anio, int mes) {
+        // Caso cliente inexistente
+        if (!clienteRepository.existsById(clienteId)) {
+            throw new EntityNotFoundException("Cliente no encontrado");
+        }
+        // Caso mes incorrecto
+        if (mes < 1 || mes > 12) {
+            throw new IllegalArgumentException("Mes incorrecto. Debe estar entre 1 y 12");
+        }
+        return detalleComprobanteRepository.countVisitasByClienteAndMonth(clienteId, anio, mes);
+    }
 
 }
