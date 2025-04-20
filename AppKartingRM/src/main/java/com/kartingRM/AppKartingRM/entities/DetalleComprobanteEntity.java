@@ -17,11 +17,12 @@ public class DetalleComprobanteEntity {
     private DetalleComprobanteId idDetalle;
 
     private int tarifa;
-    private int descuentoGrupo;
-    private int descuentoEspecial;
-    private int montoTotal;
-    private int montoIva;
-    private int montoFinal;
+    private double descuentoGrupo;
+    private double descuentoEspecial;      // Descuento cliente frecuente o cumpleanios
+    private double descuentoExtra = 0;         // Descuento manual extra, default 0
+    private double montoFinal;             // Despues de aplicar tarifas y descuentos
+    private double montoIva;
+    private double montoTotal;             // Total incluyendo iva
 
     @ManyToOne
     @MapsId("idComprobante")

@@ -1,5 +1,6 @@
 package com.kartingRM.AppKartingRM.services;
 
+import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.entities.ComprobanteEntity;
 import com.kartingRM.AppKartingRM.entities.DetalleComprobanteEntity;
 import com.kartingRM.AppKartingRM.entities.ReservaEntity;
@@ -17,7 +18,7 @@ public class ComprobanteService {
     private ComprobanteRepository comprobanteRepository;
     @Autowired
     private ReservaService reservaService;
-
+    
     public List<ComprobanteEntity> getComprobantes() {
         return comprobanteRepository.findAll();
     }
@@ -65,8 +66,8 @@ public class ComprobanteService {
     @Transactional
     public void actualizarTotalComprobante(Long idComprobante) {
         ComprobanteEntity comprobante = getComprobanteById(idComprobante);
-        int total = comprobante.getDetalles().stream()
-                .mapToInt(DetalleComprobanteEntity::getMontoFinal)
+        double total = comprobante.getDetalles().stream()
+                .mapToDouble(DetalleComprobanteEntity::getMontoTotal)
                 .sum();
         comprobante.setTotal(total);
         comprobanteRepository.save(comprobante);

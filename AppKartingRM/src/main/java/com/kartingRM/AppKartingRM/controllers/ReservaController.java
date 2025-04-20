@@ -61,4 +61,17 @@ public class ReservaController {
         reservaService.deleteReserva(id_reserva);
         return ResponseEntity.noContent().build();
     }
+
+
+    @PatchMapping("/{reservaId}/integrantes/agregar/{clienteId}")
+    public ResponseEntity<ReservaEntity> agregarIntegrante(@PathVariable Long reservaId, @PathVariable Long clienteId) {
+        ReservaEntity actualizada = reservaService.agregarIntegrante(reservaId, clienteId);
+        return ResponseEntity.ok(actualizada);
+    }
+
+    @PatchMapping("/{reservaId}/integrantes/quitar/{clienteId}")
+    public ResponseEntity<ReservaEntity> quitarIntegrante(@PathVariable Long reservaId, @PathVariable Long clienteId) {
+        ReservaEntity actualizada = reservaService.quitarIntegrante(reservaId, clienteId);
+        return ResponseEntity.ok(actualizada);
+    }
 }

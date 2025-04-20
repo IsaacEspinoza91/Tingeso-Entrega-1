@@ -135,6 +135,10 @@ PUT, update de cliente (id) en una reserva por id: localhost:8080/reservas/5/cli
 
 PUT, update de plan (id) en una reserva por id: localhost:8080/reservas/5/plan?id_plan=1
 
+PATCH, agregar cliente como integrante a la reserva por id: localhost:8080/reservas/{id_reserva}/integrantes/agregar/{id_cliente}
+
+PATCH, quitar cliente como integrante en la reserva por id: localhost:8080/reservas/{id_reserva}/integrantes/quitar/{id_cliente}
+
 DELETE, eliminar reserva por id (no elimina plan ni cliente): localhost:8080/reservas/1
 
 
@@ -186,10 +190,11 @@ POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4&id_clien
   "descuentoGrupo": 3000,
   "descuentoEspecial": 0,
   "montoTotal": 15000,
+  "descuentoExtra": 0,
   "montoIva": 2850,
   "montoFinal": 12000
 }
-
+		Si no se especifica     "descuentoExtra" es default 0
 
 PUT, update de los datos de un detalle (se indica la id compuesta en la url):   localhost:8080/detalleComprobantes/update?id_detalle=3&id_comprobante=4&id_cliente=1
 {
@@ -197,6 +202,7 @@ PUT, update de los datos de un detalle (se indica la id compuesta en la url):   
     "tarifa": 9933,
     "descuentoGrupo": 3000,
     "descuentoEspecial": 0,
+    "descuentoExtra": 300,
     "montoTotal": 15000,
     "montoIva": 2850,
     "montoFinal": 12000

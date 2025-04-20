@@ -117,4 +117,33 @@ public class ReservaService {
     public List<Object[]> findIngresosByRangoPersonas(int mesInicio, int yearInicio, int mesFin, int yearFin ){
         return reservaRepository.findIngresosByRangoPersonas(mesInicio, yearInicio, mesFin, yearFin);
     }
+
+
+
+    // Agregar un cliente a la lista de integrantes de una reserva
+    public ReservaEntity agregarIntegrante(Long reservaId, Long clienteId) {
+        ReservaEntity reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        // Obtener cliente segun id
+        ClienteEntity cliente = clienteService.getClienteById(clienteId);
+
+        // Si es que la reserva no tiene al cliente como integrante, se agrega, en caso contrario no
+        if (!reserva.getIntegrantes().contains(cliente)) {
+            reserva.getIntegrantes().add(cliente);
+        }
+
+        return reservaRepository.save(reserva);
+    }
+
+    // Quitar un cliente segun id de la lista de integrantes de una reserva
+    public ReservaEntity quitarIntegrante(Long reservaId, Long clienteId) {
+        ReservaEntity reserva = reservaRepository.findById(reservaId)
+                .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
+        // Obtener cliente segun id
+        ClienteEntity cliente = clienteService.getClienteById(clienteId);
+
+        reserva.getIntegrantes().remove(cliente);
+
+        return reservaRepository.save(reserva);
+    }
 }

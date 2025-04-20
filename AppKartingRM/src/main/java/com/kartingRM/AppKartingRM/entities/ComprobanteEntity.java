@@ -20,7 +20,7 @@ public class ComprobanteEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idComprobante;
     private boolean pagado;
-    private int total;
+    private double total;
 
     @OneToOne
     @JoinColumn(name = "id_reserva")
