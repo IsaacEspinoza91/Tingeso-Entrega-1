@@ -13,10 +13,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DetalleComprobanteEntity {
 
-    @EmbeddedId
-    private DetalleComprobanteId idDetalle;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(unique = true, nullable = false)
+    private Long idDetalle;
 
-    private int tarifa;
+    private double tarifa;
     private double descuentoGrupo;
     private double descuentoEspecial;      // Descuento cliente frecuente o cumpleanios
     private double descuentoExtra = 0;         // Descuento manual extra, default 0
@@ -25,7 +27,6 @@ public class DetalleComprobanteEntity {
     private double montoTotal;             // Total incluyendo iva
 
     @ManyToOne
-    @MapsId("idComprobante")
     @JoinColumn(name = "id_comprobante")
     @JsonBackReference("comprobante-detalles") // No serializa esta relación
     private ComprobanteEntity comprobante;

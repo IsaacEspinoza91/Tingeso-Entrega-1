@@ -1,5 +1,6 @@
 package com.kartingRM.AppKartingRM.controllers;
 
+import com.kartingRM.AppKartingRM.entities.ClienteEntity;
 import com.kartingRM.AppKartingRM.entities.ReservaEntity;
 import com.kartingRM.AppKartingRM.services.ReservaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,12 @@ public class ReservaController {
     public ResponseEntity<ReservaEntity> getReservaById(@PathVariable Long id_reserva){
         ReservaEntity reserva = reservaService.getReservaById(id_reserva);
         return ResponseEntity.ok(reserva);
+    }
+
+    @GetMapping("/{id_reserva}/integrantes")
+    public ResponseEntity<List<ClienteEntity>> getIntegrantes(@PathVariable Long id_reserva) {
+        List<ClienteEntity> integrantes = reservaService.getIntegrantesById(id_reserva);
+        return ResponseEntity.ok(integrantes);
     }
 
     @PostMapping

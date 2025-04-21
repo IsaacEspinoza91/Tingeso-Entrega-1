@@ -50,4 +50,11 @@ public class ComprobanteController {
         comprobanteService.deleteComprobante(id_comprobante);
         return ResponseEntity.noContent().build();
     }
+
+
+
+    @PostMapping("/segun-reserva/{id_reserva}")
+    public ComprobanteEntity crearComprobanteDesdeReserva(@PathVariable Long id_reserva, @RequestParam Boolean feriado, @RequestParam Double descuento_extra) {
+        return comprobanteService.crearComprobanteDesdeReserva(id_reserva, feriado, descuento_extra);
+    }
 }

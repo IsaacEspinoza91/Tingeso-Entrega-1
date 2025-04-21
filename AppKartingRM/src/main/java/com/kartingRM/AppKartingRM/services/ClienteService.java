@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 @Service
@@ -61,7 +62,16 @@ public class ClienteService {
         if (mes < 1 || mes > 12) {
             throw new IllegalArgumentException("Mes incorrecto. Debe estar entre 1 y 12");
         }
-        return detalleComprobanteRepository.countVisitasByClienteAndMonth(clienteId, anio, mes);
+        return detalleComprobanteRepository.contarVisitasByClienteYMes(clienteId, anio, mes);
     }
 
+    // Retorna un booleano que indica si el cliente esta de cumpleanios en una fecha especifica
+    public boolean cumpleAnios(ClienteEntity cliente, LocalDate fecha){
+        if (cliente.getFechaNacimiento().getMonth() == fecha.getMonth() &&
+                cliente.getFechaNacimiento().getDayOfMonth() == fecha.getDayOfMonth()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

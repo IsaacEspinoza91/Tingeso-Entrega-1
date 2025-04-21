@@ -40,6 +40,13 @@ public class ReservaService {
         return reservaRepository.findReservasExistentesEnTiempo(fecha, horaInicio, horaFinal);
     }
 
+    // Obtener integrantes de reserva segun id
+    public List<ClienteEntity> getIntegrantesById(Long id) {
+        ReservaEntity reserva = reservaRepository.findById(id).get();   // Obtengo reserva
+        // Entrego los integrantes
+        return reserva.getIntegrantes();
+    }
+
     // Funcion que ingresa una reserva a la base de datos
     // Considera que no existan reservas en el horario nuevo, ademas de que se ingresa automaticamente
     //    la hora de fin segun el tiempo del plan
@@ -124,15 +131,22 @@ public class ReservaService {
     public ReservaEntity agregarIntegrante(Long reservaId, Long clienteId) {
         ReservaEntity reserva = reservaRepository.findById(reservaId)
                 .orElseThrow(() -> new RuntimeException("Reserva no encontrada"));
-        // Obtener cliente segun id
-        ClienteEntity cliente = clienteService.getClienteById(clienteId);
 
-        // Si es que la reserva no tiene al cliente como integrante, se agrega, en caso contrario no
-        if (!reserva.getIntegrantes().contains(cliente)) {
-            reserva.getIntegrantes().add(cliente);
+        // Caso en que se intentan agregar mas integrantes de la cantidad total de integrantes de la reserva
+        if (reserva.getIntegrantes().size() >= reserva.getTotalPersonas()) {
+            return null;
+        } else {
+            // Caso en que todavia no se agregan todos los integrantes a la reserva
+            // Obtener cliente segun id
+            ClienteEntity cliente = clienteService.getClienteById(clienteId);
+
+            // Si es que la reserva no tiene al cliente como integrante, se agrega, en caso contrario no
+            if (!reserva.getIntegrantes().contains(cliente)) {
+                reserva.getIntegrantes().add(cliente);
+            }
+
+            return reservaRepository.save(reserva);
         }
-
-        return reservaRepository.save(reserva);
     }
 
     // Quitar un cliente segun id de la lista de integrantes de una reserva

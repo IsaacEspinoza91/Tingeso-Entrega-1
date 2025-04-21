@@ -1,9 +1,6 @@
 package com.kartingRM.AppKartingRM.services;
 
-import com.kartingRM.AppKartingRM.entities.ClienteEntity;
-import com.kartingRM.AppKartingRM.entities.ComprobanteEntity;
-import com.kartingRM.AppKartingRM.entities.DetalleComprobanteEntity;
-import com.kartingRM.AppKartingRM.entities.DetalleComprobanteId;
+import com.kartingRM.AppKartingRM.entities.*;
 import com.kartingRM.AppKartingRM.repositories.DetalleComprobanteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,9 +28,9 @@ public class DetalleComprobanteService {
         return detalleComprobanteRepository.findByComprobanteIdComprobante(idComprobante);
     }
 
-    // Obtener detalle especifico segun id compuesta
-    public DetalleComprobanteEntity getDetalleComprobanteById(DetalleComprobanteId id) {
-        return detalleComprobanteRepository.findById(id).orElseThrow(() -> new RuntimeException("Detalle no encontrado"));
+    // Obtener detalle especifico segun id
+    public DetalleComprobanteEntity getDetalleComprobanteById(Long id) {
+        return detalleComprobanteRepository.findById(id).get();
     }
 
     // Obtener todos los detallesComprobantes de un cliente
@@ -49,80 +46,84 @@ public class DetalleComprobanteService {
     // Crear nuevo detalle
     @Transactional
     public DetalleComprobanteEntity createDetalleComprobante(DetalleComprobanteEntity detalle, Long idComprobante, Long idCliente) {
+        // Obtengo el comprobante segun la id
         ComprobanteEntity comprobante = comprobanteService.getComprobanteById(idComprobante);
+        // Obtengo el cliente segun la id
         ClienteEntity cliente = clienteService.getClienteById(idCliente);
 
         // Configurar relación bidireccional Comprobante
-        detalle.setComprobante(comprobante);                    // Add el comprobante al detalle
-        DetalleComprobanteId id = new DetalleComprobanteId();   // Creamos nueva id del detalle
-        id.setIdComprobante(idComprobante);
-        id.setIdDetalle(generarNuevoIdDetalle(idComprobante));
-        detalle.setIdDetalle(id);                               // Setemos id al detalle
-
+        detalle.setComprobante(comprobante);
         // Configurar Relación unidireccional Cliente
         detalle.setCliente(cliente);
 
         DetalleComprobanteEntity detalleGuardado = detalleComprobanteRepository.save(detalle);
 
-        // Actualizar total del comprobante                                                                                        OJOOOJOJOJO
-        comprobanteService.actualizarTotalComprobante(idComprobante);
+        // Actualizar total del comprobante al crear un nuevo detalle
+        //comprobanteService.actualizarTotalComprobante(idComprobante); // Notar que la lista de detalles es vacia, por lo que no actualiza el total
 
         return detalleGuardado;
     }
 
     // Actualizar detalle existente
     @Transactional
-    public DetalleComprobanteEntity updateDetalle(DetalleComprobanteId id, DetalleComprobanteEntity detalle, Long idCliente) {
-        DetalleComprobanteEntity detalleExistente = getDetalleComprobanteById(id);
-        ClienteEntity cliente = clienteService.getClienteById(idCliente);
+    public DetalleComprobanteEntity updateDetalle(Long id, DetalleComprobanteEntity detalle) {
+        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id).get();
 
         // Actualizar campos de detalle
-        detalleExistente.setTarifa(detalle.getTarifa());
-        detalleExistente.setDescuentoGrupo(detalle.getDescuentoGrupo());
-        detalleExistente.setDescuentoEspecial(detalle.getDescuentoEspecial());
-        detalleExistente.setMontoTotal(detalle.getMontoTotal());
-        detalleExistente.setMontoIva(detalle.getMontoIva());
-        detalleExistente.setMontoFinal(detalle.getMontoFinal());
-        detalleExistente.setCliente(cliente);
-
-        DetalleComprobanteEntity detalleActualizado = detalleComprobanteRepository.save(detalleExistente);
+        detalle.setIdDetalle(id);
+        detalle.setCliente(detalleOriginal.getCliente());
+        detalle.setComprobante(detalleOriginal.getComprobante());
 
         // Actualizar total del comprobante
-        comprobanteService.actualizarTotalComprobante(id.getIdComprobante());
+        comprobanteService.actualizarTotalComprobante(detalle.getComprobante().getIdComprobante());
 
-        return detalleActualizado;
+        return detalleComprobanteRepository.save(detalle);
     }
+
+
+    // Actualizar detalle existente
+    @Transactional
+    public DetalleComprobanteEntity updateClienteDeDetalle(Long id, Long idCliente) {
+        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id).get();
+
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
+
+        detalleOriginal.setCliente(cliente);
+
+        return detalleComprobanteRepository.save(detalleOriginal);
+    }
+
 
     // Eliminar detalle
     @Transactional
-    public void deleteDetalleComprobante(Long idDetalle, Long idComprobante) {
-        // Generar la Id compuesta del detalle
-        DetalleComprobanteId id = new DetalleComprobanteId(idDetalle, idComprobante);
-        // Obtener el detalle segun la id compuesta
-        DetalleComprobanteEntity detalle = getDetalleComprobanteById(id);
+    public boolean deleteDetalleComprobante(Long id) throws Exception{
+        try {
+            // Obtener el detalle segun la id
+            DetalleComprobanteEntity detalle = getDetalleComprobanteById(id);
 
-        // Obtner comprobante de un DetalleComprobante
-        ComprobanteEntity comprobante = detalle.getComprobante();
+            // Obtener comprobante de un DetalleComprobante
+            ComprobanteEntity comprobante = detalle.getComprobante();
 
-        // Elimina el detalle de la lista de detalles de Comprobante
-        comprobante.getDetalles().remove(detalle);
-        detalle.setComprobante(null);
+            // Elimina el detalle de la lista de detalles de Comprobante
+            comprobante.getDetalles().remove(detalle);
+            detalle.setComprobante(null);
 
-        // Eliminar detalle
-        detalleComprobanteRepository.delete(detalle);
+            // Actualizar el total del comprobante
+            comprobanteService.actualizarTotalComprobante(comprobante.getIdComprobante());
 
-        // Actualizar el total del comprobante
-        comprobanteService.actualizarTotalComprobante(comprobante.getIdComprobante());
+            // Elimina el detalle de la base de datos
+            detalleComprobanteRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 
 
-    // Metodo auxiliar para generar nuevo ID de detalle
-    //   consider la llave compuesta donde se mantiene la id comprobante y la de detalle va aumentando en 1
-    private Long generarNuevoIdDetalle(Long idComprobante) {
-        // Encontrar el id maximo dentro de la tabla DetallesComprobantes
-        Long maxId = detalleComprobanteRepository.findMaxIdDetalleByIdComprobante(idComprobante);
-        // En caso de no tener maximo, retorno 1; en caso contrario sumo 1 al maximo y lo retorno
-        return maxId == null ? 1L : maxId + 1;
+    @Transactional
+    public DetalleComprobanteEntity guardarDetalle(DetalleComprobanteEntity detalle) {
+        return detalleComprobanteRepository.save(detalle);
     }
+
 
 }
