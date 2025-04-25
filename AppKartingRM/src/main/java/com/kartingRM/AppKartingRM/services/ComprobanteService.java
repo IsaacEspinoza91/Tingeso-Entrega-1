@@ -20,6 +20,9 @@ public class ComprobanteService {
 
     @Autowired
     private ComprobanteRepository comprobanteRepository;
+    // Al ser DetalleComprobante una entidad debil que depende de Comprobante, toda su operacion se realiza en esta capa
+    @Autowired
+    private DetalleComprobanteRepository detalleComprobanteRepository;
     @Autowired
     private ReservaService reservaService;
     @Autowired
@@ -28,11 +31,8 @@ public class ComprobanteService {
 
 
 
-    @Autowired
-    private DetalleComprobanteRepository detalleComprobanteRepository;
-    //private DetalleComprobanteService detalleComprobanteService;
 
-
+    //Permite crear un comprobante completo con todos sus detalles de comprobante
     public ComprobanteEntity crearComprobanteDesdeReserva(Long reservaId, boolean esFeriado, double descuentoExtra) {
         // Condicion base si el descuento extra es negativo. No crea el comprobante ni detalles
         if (descuentoExtra<0) return null;
@@ -54,14 +54,20 @@ public class ComprobanteService {
         double tarifaIntegrante = tarifaBase / totalPersonas;
         // Obtner descuento extra para cada integrante
         double descuenteExtraIntegrante = descuentoExtra / totalPersonas;
+        // Inicializacion de var para contar cumpleañeros. Regla de negocio, cantidad max de descuento por grupo
+        int cantidadCumpleanieros = 0;
 
         // Crear detalles para cada persona en la reserva. Iteramos sobre la lista de integrantes
         for (ClienteEntity clienteActual : reservaService.getIntegrantesById(reservaId)) {
+
             DetalleComprobanteEntity detalle = crearDetalleComprobante(
                     comprobante, clienteActual, tarifaIntegrante,
-                    descuenteExtraIntegrante, totalPersonas, reserva.getFecha());
+                    descuenteExtraIntegrante, totalPersonas, reserva.getFecha(), cantidadCumpleanieros);
             detalleComprobanteRepository.save(detalle);
-            //detalleComprobanteService.guardarDetalle(detalle);
+
+            // Si es cumpleaniero, se suma a la cantidad en la variable
+            if (clienteService.cumpleAnios(clienteActual,reserva.getFecha())) cantidadCumpleanieros += 1;
+
             comprobante.getDetalles().add(detalle);     // Agregamos el detalle a la lista de detalles del comprobante
         }
 
@@ -76,20 +82,34 @@ public class ComprobanteService {
                                                              double tarifa,
                                                              double descuentoExtra,
                                                              int totalPersonas,
-                                                             LocalDate fechaReserva) {
+                                                             LocalDate fechaReserva,
+                                                             int cantidadCompleanieros) {
         // Creo nuevo detalle
         DetalleComprobanteEntity detalle = new DetalleComprobanteEntity();
         detalle.setComprobante(comprobante);
         detalle.setCliente(cliente);
 
         // Calculo valores para el detalle
-        double porcentajeDescuentoEspecial;
+        double porcentajeDescuentoEspecial = 0;
         double porcentajeDescuentoGrupo = calcularDescuentoGrupo(totalPersonas);
 
-        // Obtener que tipo de descuento especial aplica (cliente frecuente o cumpleanios)
-        if (clienteService.cumpleAnios(cliente, fechaReserva)) {    // Caso cliente esta de cumpleanios el dia de la reserva
-            porcentajeDescuentoEspecial = calcularDescuentoCumpleanios(cliente,fechaReserva);
-        } else {    // Caso no esta de cumpleanios y se verifica si es cliente frecuente
+
+        // Obtener que tipo de % descuento especial aplica (cliente frecuente o cumpleanios)
+        //  Reglas de negocio sobre cantidad maxima de descuentos cumpleaños (50%)
+        //   Grupo de 3 a 5: 1 persona max de cumpleanios tiene descuento
+        //   Grupo de 6 a 15: 2 personas max de cumpleanios tienen descuento       (Deberia ser hasta 10 personas?)
+        //  Cliente frecuente:
+        //   No frecuente (0-1): 0%  , Regular (2-4): 10%  , Frecuente (5-6): 20%  , Muy Frecuente (7 o mas): 30%
+        if (clienteService.cumpleAnios(cliente, fechaReserva)) {     // Cliente cumpleañero
+            // Caso grupo 3 a 5, Cliente cumple años y hay cupo de descuento
+            if (totalPersonas>=3 && totalPersonas<=5 && cantidadCompleanieros<1) {
+                porcentajeDescuentoEspecial = calcularDescuentoCumpleanios(cliente,fechaReserva);
+
+            } else if (totalPersonas>=6 && totalPersonas<=15 && cantidadCompleanieros <2) {   // Caso grupo de 6 a 15 y hay cupo)
+                porcentajeDescuentoEspecial = calcularDescuentoCumpleanios(cliente, fechaReserva);
+
+            }
+        } else {    // Cliento no cumple años. Se verifica si es cliente frecuente
             porcentajeDescuentoEspecial = calcularDescuentoFrecuente(cliente, fechaReserva);
         }
 
@@ -174,6 +194,7 @@ public class ComprobanteService {
         return comprobanteRepository.findById(id).get();
     }
 
+    // Craer unico objeto Comprobante, no considera detalles
     public ComprobanteEntity createComprobante(ComprobanteEntity comprobante, Long idReserva) {
         ReservaEntity reserva = reservaService.getReservaById(idReserva);
         if (reserva != null) {
@@ -220,5 +241,124 @@ public class ComprobanteService {
         }
         comprobante.setTotal(total);
         comprobanteRepository.save(comprobante);
+    }
+
+
+
+
+
+
+    // Operaciones de DetalleComprobante
+
+    // Obtener todos los detalles
+    public List<DetalleComprobanteEntity> getDetalleComprobantes() {
+        return detalleComprobanteRepository.findAll();
+    }
+
+    // Obtener detalles por comprobante segun id
+    public List<DetalleComprobanteEntity> getDetallesByComprobante(Long idComprobante) {
+        return detalleComprobanteRepository.findByComprobanteIdComprobante(idComprobante);
+    }
+
+    // Obtener detalle especifico segun id
+    public DetalleComprobanteEntity getDetalleComprobanteById(Long id) {
+        return detalleComprobanteRepository.findById(id).get();
+    }
+
+    // Obtener todos los detallesComprobantes de un cliente
+    public List<DetalleComprobanteEntity> getDetalleComprobantesByClienteId(Long clienteId) {
+        return detalleComprobanteRepository.findByClienteId(clienteId);
+    }
+
+    // Obtener el detalleComprobante de un cliente y comprobante especifo
+    public DetalleComprobanteEntity getDetalleComprobanteByClienteIdAndComprobanteId(Long clienteId, Long comprobanteId) {
+        return detalleComprobanteRepository.findByClienteIdAndComprobanteIdComprobante(clienteId, comprobanteId);
+    }
+
+    // Crear unico objeto Detalle, Considera todos los valores como parametros y automatiza el calculo de los montos
+    @Transactional
+    public DetalleComprobanteEntity createDetalleComprobante(DetalleComprobanteEntity detalle, Long idComprobante, Long idCliente) {
+        // Obtengo el comprobante segun la id
+        ComprobanteEntity comprobante = getComprobanteById(idComprobante);
+        // Obtengo el cliente segun la id
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
+
+        // Configurar relación bidireccional Comprobante
+        detalle.setComprobante(comprobante);
+        // Configurar Relación unidireccional Cliente
+        detalle.setCliente(cliente);
+
+        DetalleComprobanteEntity detalleGuardado = detalleComprobanteRepository.save(detalle);
+
+        // Actualizar total del comprobante al crear un nuevo detalle
+        //actualizarTotalComprobante(idComprobante); // Notar que la lista de detalles es vacia, por lo que no actualiza el total
+
+        return detalleGuardado;
+    }
+
+    // Actualizar detalle existente
+    @Transactional
+    public DetalleComprobanteEntity updateDetalle(Long id, DetalleComprobanteEntity detalle) {
+        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id).get();
+
+        // Actualizar campos de detalle
+        detalle.setIdDetalle(id);
+        detalle.setCliente(detalleOriginal.getCliente());
+        detalle.setComprobante(detalleOriginal.getComprobante());
+
+        // Actualizar total del comprobante
+        actualizarTotalComprobante(detalle.getComprobante().getIdComprobante());
+
+        return detalleComprobanteRepository.save(detalle);
+    }
+
+    // Actualizar detalle existente
+    @Transactional
+    public DetalleComprobanteEntity updateClienteDeDetalle(Long id, Long idCliente) {
+        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id).get();
+
+        ClienteEntity cliente = clienteService.getClienteById(idCliente);
+
+        detalleOriginal.setCliente(cliente);
+
+        return detalleComprobanteRepository.save(detalleOriginal);
+    }
+
+
+    // Eliminar detalle
+    @Transactional
+    public boolean deleteDetalleComprobante(Long id) throws Exception{
+        try {
+            // Obtener el detalle segun la id
+            DetalleComprobanteEntity detalle = getDetalleComprobanteById(id);
+
+            // Obtener comprobante de un DetalleComprobante
+            ComprobanteEntity comprobante = detalle.getComprobante();
+
+            // Obtener intregrante del Detalle
+            ClienteEntity cliente = detalle.getCliente();
+
+            // Obtener la reserva del Detalle
+            ReservaEntity reserva = comprobante.getReserva();
+
+            // Elimina el detalle de la lista de detalles de Comprobante
+            comprobante.getDetalles().remove(detalle);
+            detalle.setComprobante(null);
+
+            // Elimina el integrante del detalle de la lista de integrantes de la reserva
+            reserva.getIntegrantes().remove(cliente);
+
+            // Eliminar la reserva de la lista reservas como integrante del Cliente
+            cliente.getReservasComoIntegrante().remove(reserva);
+
+            // Actualizar el total del comprobante
+            actualizarTotalComprobante(comprobante.getIdComprobante());
+
+            // Elimina el detalle de la base de datos
+            detalleComprobanteRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }

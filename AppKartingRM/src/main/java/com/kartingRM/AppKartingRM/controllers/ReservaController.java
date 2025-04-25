@@ -40,8 +40,8 @@ public class ReservaController {
     }
 
     @PostMapping
-    public ResponseEntity<ReservaEntity> createReserva(@RequestBody ReservaEntity reserva, @RequestParam Long id_cliente, @RequestParam Long id_plan){
-        ReservaEntity reservaNueva = reservaService.createReserva(reserva, id_cliente, id_plan);
+    public ResponseEntity<ReservaEntity> createReserva(@RequestBody ReservaEntity reserva, @RequestParam Long id_cliente, @RequestParam Long id_plan, @RequestParam Boolean feriado){
+        ReservaEntity reservaNueva = reservaService.createReserva(reserva, id_cliente, id_plan, feriado);
         return ResponseEntity.ok(reservaNueva);
     }
 

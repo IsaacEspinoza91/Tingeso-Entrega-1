@@ -16,6 +16,9 @@ public class ClienteService {
 
     @Autowired
     private ClienteRepository clienteRepository;
+
+    // Utilizamos el repositorio solo para obtener un dato particular. No realiza ninguna operacion de modificacion
+    //  ni similares. Por lo que no se entiende como mala practica (Evita recursion de dependencias)
     @Autowired
     private DetalleComprobanteRepository detalleComprobanteRepository;
 

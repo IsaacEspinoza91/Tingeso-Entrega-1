@@ -112,7 +112,7 @@ GET, Obtiene reserva por id: localhost:8080/reservas/2
 
 GET, Obtiene las reservas de un cliente segun su id: localhost:8080/reservas/por-cliente/2
 
-POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2		// Se indican FK en url
+POST, Crea Reserva: localhost:8080/reservas?id_cliente=2&id_plan=2&feriado=false		// Se indican FK en url
 {
     "estado": "confirmada",
     "totalPersonas": 4,
@@ -173,23 +173,20 @@ POST, craer Comprobante y los Detalles asociados. Necesita que los integrantes y
 localhost:8080/comprobantes/segun-reserva/1?feriado=false
 
 
+Operaciones de detalles (Se ejecutan dentro de Comprobantes, entidad debil):
 
+GET, Obtiene todos los detalles (No muestra datos de entidad comprobante para evitar recursion en json): localhost:8080/comprobantes/detalles/
 
-
-- DetalleComprobanteEntity
-
-GET, Obtiene todos los detalles (No muestra datos de entidad comprobante para evitar recursion en json): localhost:8080/detalleComprobantes/
-
-GET, Obtiene todos los detalles de un comprobante segun su id:  localhost:8080/detalleComprobantes/comprobante/4
+GET, Obtiene todos los detalles de un comprobante segun su id:  localhost:8080/comprobantes/detalles/comprobante/4
 
 GET, Obtiene un detalle segun su id:
-ocalhost:8080/detalleComprobantes/2
+ocalhost:8080/comprobantes/detalles/2
 
-GET, Obtiene un detalle segun id de cliente e id de comprobante:   localhost:8080/detalleComprobantes?id_cliente=2&id_comprobante=1
+GET, Obtiene todos los detalles de un cliente segun id:  localhost:8080/comprobantes/detalles/cliente/2
 
-GET, Obtiene todos los detalles de un cliente segun id:  localhost:8080/detalleComprobantes/cliente/2
+GET, Obtiene un detalle segun id de cliente e id de comprobante:   localhost:8080/comprobantes/detalles?id_cliente=2&id_comprobante=1
 
-POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4&id_cliente=2
+POST, Crea detalle: localhost:8080/comprobantes/detalles?id_comprobante=3&id_cliente=3
 {
   "tarifa": 15000,
   "descuentoGrupo": 3000,
@@ -201,7 +198,7 @@ POST, Crea detalle: localhost:8080/detalleComprobantes?id_comprobante=4&id_clien
 }
 		Si no se especifica     "descuentoExtra" es default 0
 
-PUT, update de los datos de un detalle segun id de detalle:  localhost:8080/detalleComprobantes/update/1
+PUT, update de los datos de un detalle segun id de detalle:  localhost:8080/comprobantes/detalles/update/1
 {
     "idDetalle": null,
     "tarifa": 9933,
@@ -213,9 +210,9 @@ PUT, update de los datos de un detalle segun id de detalle:  localhost:8080/deta
     "montoFinal": 12000
 }
 
-PUT, update del cliente de un detalle segun id de detalle:  localhost:8080/detalleComprobantes/update/{id_detalle}/cliente?id_cliente=2
+PUT, update del cliente de un detalle segun id de detalle:  localhost:8080/comprobantes/detalles/update/{id_detalle}/cliente?id_cliente=2
 
-DELETE, elimina un Detalle, Ademas elimina el detalle de la lista de detalles del Comprobante:   localhost:8080/detalleComprobantes/delete?id_detalle=1&id_comprobante=4
+DELETE, elimina un Detalle, Ademas elimina el detalle de la lista de detalles del Comprobante:   localhost:8080/comprobantes/detalles/delete/4
 
 
 

@@ -50,27 +50,46 @@ public class ReservaService {
     // Funcion que ingresa una reserva a la base de datos
     // Considera que no existan reservas en el horario nuevo, ademas de que se ingresa automaticamente
     //    la hora de fin segun el tiempo del plan
-    public ReservaEntity createReserva(ReservaEntity reserva, Long idCliente, Long idPlan){
+    public ReservaEntity createReserva(ReservaEntity reserva, Long idCliente, Long idPlan, Boolean esFeriado){
         PlanEntity plan = planService.getPlanById(idPlan);
         ClienteEntity cliente = clienteService.getClienteById(idCliente);
+        // Caso parametros validos de cliente, plan y hora de inicio
         if (cliente != null && plan != null && reserva.getHoraInicio() != null) {
             reserva.setReservante(cliente);
             reserva.setPlan(plan);
 
             // Determinar la hora final sumando los minutos del plan a la hora inicial
+            LocalTime horaInicio = reserva.getHoraInicio();
             LocalTime horaFinalCalculada = reserva.getHoraInicio().plusMinutes(reserva.getPlan().getDuracionTotal());
             reserva.setHoraFin(horaFinalCalculada);
 
             // Verificar que no existan reservas existentes en el horario determinado
             List<ReservaEntity> reservasExistentes = getReservasSolapadasByHoraInicio(
                     reserva.getFecha(), reserva.getHoraInicio(), reserva.getHoraFin());
+
             // Si existen reservas en el horario, no sea crea la nueva reserva
             if (!reservasExistentes.isEmpty()){
                 throw new IllegalStateException("Ya existe una reserva con ese horario");
             }
+
+            // Verificar Horario de inicio y fin validos.
+            //  Lunes a Viernes: 14:00 a 22:00
+            //  Sabados, Domingos, Feriados: 10:00 a 22:00
+            boolean esFinDeSemana = reserva.getFecha().getDayOfWeek().getValue() >= 6;// Analisis si es fin de semana o no
+            if (esFeriado || esFinDeSemana){// Horario fin de semana o feriado
+                // Horario antes o despues del horario de servicio
+                if (horaInicio.isBefore(LocalTime.of(10,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
+                    throw new IllegalStateException("Horario incorrecto. Domingos, sábados y feriados: 10:00 a 22:00");
+                }
+            } else { // Horario semana
+                if (horaInicio.isBefore(LocalTime.of(14,00,00)) || horaFinalCalculada.isAfter(LocalTime.of(22,00,00))) {
+                    throw new IllegalStateException("Horario incorrecto. Lunes a Viernes: 14:00 a 22:00");
+                }
+            }
+
             return reservaRepository.save(reserva);
         } else {
-            throw new RuntimeException("Cliente no encontrado");
+            throw new RuntimeException("Cliente no encontrado, plan no existe, o hora erronea");
         }
     }
 
