@@ -1,0 +1,68 @@
+.dia-calendario {
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.dia-header {
+  background-color: #f5f5f5;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.dia-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.fecha {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.reservas-container {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+}
+
+.reserva {
+  background-color: #e3f2fd;
+  border-left: 4px solid #1976d2;
+  border-radius: 4px;
+  padding: 8px;
+  margin-bottom: 8px;
+}
+
+.reserva-horario {
+  font-size: 0.8rem;
+  color: #1976d2;
+  margin-bottom: 4px;
+}
+
+.reserva-info {
+  font-size: 0.9rem;
+}
+
+.reserva-info strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.reserva-info span {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.sin-reservas {
+  color: #757575;
+  font-style: italic;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 0.9rem;
+}

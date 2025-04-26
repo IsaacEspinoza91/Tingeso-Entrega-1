@@ -15,7 +15,7 @@ Cliente
 
  
 		Peticiones HTTP
-- KartEntity
+- KartEntity  (Implementada en FRONT)
 
 GET, Obtiene todos los karts: localhost:8080/karts/
 
@@ -39,7 +39,7 @@ DELETE, eliminar kart por id: localhost:8080/karts/3
 
 
 
-- ClienteEntity
+- ClienteEntity  (Implementada en FRONT)
 
 GET, Obtiene todos los clientes: localhost:8080/clientes/
 
@@ -79,7 +79,7 @@ GET, Obtiene la cantidad de veces que el cliente (id) ha visitado el karting seg
 
 
 
-- PlanEntity
+- PlanEntity  (Implementada en FRONT)
 
 GET, Obtiene los planes: localhost:8080/planes/
 
@@ -248,6 +248,5 @@ Reportes
 
 
 RackSemanal
-- Obtener las reservas de una semana segun el dia por nombre (lunes, martes, ...): localhost:8080/rackSemanal/?semana=0
+- Obtener las reservas de una semana segun el dia por nombre (lunes, martes, ...): localhost:8080/rackSemanal/0
 El valor indica el numero de semana: 0->semana actual, 1-> prox semana, 2-> prox 2 semana, -1-> semana anterior.
-En caso de no indicar el valor, retorna la semana actual    localhost:8080/rackSemanal/

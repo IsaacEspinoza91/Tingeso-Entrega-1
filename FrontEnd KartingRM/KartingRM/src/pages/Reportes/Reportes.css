@@ -1,0 +1,22 @@
+.reportes-page {
+  padding: 2rem;
+  margin-top: 60px;
+}
+
+.reportes-page h1 {
+  color: #333;
+  margin-bottom: 2rem;
+  text-align: center;
+  border-bottom: 2px solid #61dafb;
+  padding-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #fdecea;
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
+}
