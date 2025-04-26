@@ -2,6 +2,7 @@ package com.kartingRM.AppKartingRM.services;
 
 import com.kartingRM.AppKartingRM.entities.PlanEntity;
 import com.kartingRM.AppKartingRM.repositories.PlanRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +32,10 @@ public class PlanService {
     }
 
     public boolean deletePlan(Long id) throws Exception {
-        try{
+        try {
+            if (!planRepository.existsById(id)) {
+                throw new EntityNotFoundException("Plan con ID " + id + " no encontrado");
+            }
             planRepository.deleteById(id);
             return true;
         } catch (Exception e) {

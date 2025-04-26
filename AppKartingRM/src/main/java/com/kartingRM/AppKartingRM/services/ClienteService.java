@@ -34,6 +34,11 @@ public class ClienteService {
         return clienteRepository.findByRut(rut);
     }
 
+    public ArrayList<ClienteEntity> findByNombreAndApellido(String nombre, String apellido){
+        // Considera el caso en que haya mas de un cliente con el mismo nombre
+        return clienteRepository.findByNombreAndApellido(nombre,apellido);
+    }
+
     public ClienteEntity createCliente(ClienteEntity cliente){
         return clienteRepository.save(cliente);
     }

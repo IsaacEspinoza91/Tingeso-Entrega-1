@@ -43,7 +43,11 @@ DELETE, eliminar kart por id: localhost:8080/karts/3
 
 GET, Obtiene todos los clientes: localhost:8080/clientes/
 
-GET, Obtiene cliente por id, ej kart 2: localhost:8080/clientes/2
+GET, Obtiene cliente por id: localhost:8080/clientes/2
+
+GET, OBtiene cliente por rut: localhost:8080/clientes/rut/21.123.123-2
+
+GET, Obtiene cliente/s por nombre y apellido. Es lista considerando el caso de mas de un cliente con mismo nombre: localhost:8080/clientes/nombre/Isaac/Espinoza
 
 POST, Crea cliente: localhost:8080/clientes/
 {

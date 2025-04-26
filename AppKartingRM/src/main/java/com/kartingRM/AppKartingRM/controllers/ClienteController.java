@@ -28,6 +28,18 @@ public class ClienteController {
         return ResponseEntity.ok(cliente);
     }
 
+    @GetMapping("/rut/{rut_cliente}")
+    public ResponseEntity<ClienteEntity> getClienteById(@PathVariable String rut_cliente) {
+        ClienteEntity cliente = clienteService.getClienteByRut(rut_cliente);
+        return ResponseEntity.ok(cliente);
+    }
+
+    @GetMapping("/nombre/{nombre}/{apellido}")
+    public ResponseEntity<List<ClienteEntity>> findByNombreAndApellido(@PathVariable String nombre, @PathVariable String apellido) {
+        List<ClienteEntity> clientes = clienteService.findByNombreAndApellido(nombre, apellido);
+        return ResponseEntity.ok(clientes);
+    }
+
     @PostMapping("/")
     public ResponseEntity<ClienteEntity> createCliente(@RequestBody ClienteEntity cliente) {
         ClienteEntity clienteNuevo = clienteService.createCliente(cliente);
