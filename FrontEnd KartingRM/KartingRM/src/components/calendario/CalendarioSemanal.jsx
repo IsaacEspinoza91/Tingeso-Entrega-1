@@ -14,56 +14,50 @@ const diasSemana = [
 ];
 
 const CalendarioSemanal = () => {
-  const [semanaOffset, setSemanaOffset] = useState(0);
-  const [reservasSemana, setReservasSemana] = useState(null);
+  const [semana, setSemana] = useState(0);
+  const [datosSemana, setDatosSemana] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchReservas = async (offset) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await getReservasSemana(offset);
-      setReservasSemana(data);
-    } catch (err) {
-      setError('Error al cargar las reservas. Por favor intente nuevamente.');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchReservas(semanaOffset);
-  }, [semanaOffset]);
+    const cargarReservas = async () => {
+      try {
+        setLoading(true);
+        const data = await getReservasSemana(semana);
+        setDatosSemana(data);
+        setError(null);
+      } catch (err) {
+        setError('Error al cargar las reservas');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleSemanaAnterior = () => {
-    setSemanaOffset(prev => prev - 1);
+    cargarReservas();
+  }, [semana]);
+
+
+  const cambiarSemana = (valor) => {
+    setSemana(valor);
   };
 
-  const handleSemanaSiguiente = () => {
-    setSemanaOffset(prev => prev + 1);
-  };
 
-  const handleHoy = () => {
-    setSemanaOffset(0);
-  };
-
-  if (loading && !reservasSemana) return <div className="loading">Cargando calendario...</div>;
+  if (loading && !datosSemana) return <div className="loading">Cargando calendario...</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="calendario-semanal">
       <div className="calendario-header">
         <div className="rango-semana">
-          {reservasSemana && (
+          {datosSemana && (
             <>
-              {new Date(reservasSemana.fechaInicioSemana).toLocaleDateString('es-CL', { 
+              {new Date(datosSemana.fechaInicioSemana+"T00:00:00").toLocaleDateString('es-CL', { 
                 day: 'numeric', 
                 month: 'long', 
                 year: 'numeric' 
-              })} - 
-              {new Date(reservasSemana.fechaFinSemana).toLocaleDateString('es-CL', { 
+              })} -
+              {new Date(datosSemana.fechaFinSemana+"T00:00:00").toLocaleDateString('es-CL', { 
                 day: 'numeric', 
                 month: 'long', 
                 year: 'numeric' 
@@ -73,13 +67,13 @@ const CalendarioSemanal = () => {
         </div>
         
         <div className="controles-navegacion">
-          <button onClick={handleSemanaAnterior} disabled={loading}>
+        <button onClick={() => cambiarSemana(semana - 1)} disabled={loading}>
             &lt; Semana anterior
           </button>
-          <button onClick={handleHoy} disabled={loading || semanaOffset === 0}>
+          <button onClick={() => cambiarSemana(0)} disabled={loading || semana === 0}>
             Actual
           </button>
-          <button onClick={handleSemanaSiguiente} disabled={loading}>
+          <button onClick={() => cambiarSemana(semana + 1)} disabled={loading}>
             Semana siguiente &gt;
           </button>
         </div>
@@ -89,8 +83,8 @@ const CalendarioSemanal = () => {
         {diasSemana.map(dia => {
           // Calcular la fecha para cada elemento día
           let fechaDia = null;
-          if (reservasSemana && reservasSemana.fechaInicioSemana) {
-            const fechaInicio = new Date(reservasSemana.fechaInicioSemana);
+          if (datosSemana && datosSemana.fechaInicioSemana) {
+            const fechaInicio = new Date(datosSemana.fechaInicioSemana+"T00:00:00");
             const diaIndex = diasSemana.findIndex(d => d.key === dia.key);
             fechaDia = new Date(fechaInicio);
             fechaDia.setDate(fechaInicio.getDate() + diaIndex);
@@ -100,7 +94,7 @@ const CalendarioSemanal = () => {
             <DiaCalendario
               key={dia.key}
               nombreDia={dia.nombre}
-              reservas={reservasSemana?.reservasPorDia[dia.key] || []}
+              reservas={datosSemana?.reservasPorDia[dia.key] || []}
               fecha={fechaDia}
             />
           );

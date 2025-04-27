@@ -1,19 +1,4 @@
-		Servicios
 
-Cliente
--	Obtener todos los clientes: GetClientes()
--	Obtener cliente por id: GetClienteById(id)
--	Obtener cliente por rut: GetClienteByRut(rut)
--	Guardar Cliente nuevo: SaveCliente( Cliente)
--	Actualizar Cliente:    UpdateCliente(id, Cliente )
--	Eliminar Cliente por id:  DeleteCliente( id)
-
-(Se realizaron las mismas operaciones para todas las entidades de la base de datos)
-
-
-
-
- 
 		Peticiones HTTP
 - KartEntity  (Implementada en FRONT)
 
@@ -108,7 +93,8 @@ DELETE, eliminar plan por id: localhost:8080/planes/1
 
 
 
-- ReservaEntity		(Check: comprobacion horario y automatizacion de hora de fin)
+- ReservaEntity		(Implementada en FRONT)
+(Check: comprobacion horario y automatizacion de hora de fin)
 
 GET, Obtiene las reservas: localhost:8080/reservas/
 
@@ -149,8 +135,10 @@ DELETE, eliminar reserva por id (no elimina plan ni cliente): localhost:8080/res
 
 
 
-- ComprobanteEntity 		(Falta automatizar que total se copida de detalleComprobante, crear registros de detalleComprobante desde esta entidad?)
-Solo se puede crear un comprobante por reserva
+- ComprobanteEntity 
+Consideraciones:
+	Los Detalles Comprobantes se crean automaticamente al crear el Comprobante. Estos se asignan a los clientes previamente existentes en la lista de integrantes de la Reserva. Por lo que si no estan anteriormente asignados, no se podrá crear el comprobante
+	Solo se puede crear un comprobante por reserva
 
 GET, Obtiene los comprobantes: localhost:8080/comprobantes/
 
@@ -174,7 +162,7 @@ DELETE, eliminar comprobante por id (no elimina reserva): localhost:8080/comprob
 
 Extra:
 POST, craer Comprobante y los Detalles asociados. Necesita que los integrantes ya existan en la lista de integrantes de la reserva (Se indica si el dia es feriado o no):
-localhost:8080/comprobantes/segun-reserva/1?feriado=false
+localhost:8080/comprobantes/segun-reserva/1?feriado=false&descuento_extra=0
 
 
 Operaciones de detalles (Se ejecutan dentro de Comprobantes, entidad debil):
@@ -241,12 +229,12 @@ DELETE, elimina todoas las reservaKart segun id de reserva: localhost:8080/reser
 
 
 DTO
-Reportes
+Reportes         (Implementada en FRONT)
 - Reporte de ingresos por numero de vueltas: localhost:8080/reportes/ingresos-por-vueltas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
 
 - Reporte de ingresos por numero de personas: localhost:8080/reportes/ingresos-por-personas?mes_inicio=4&anio_inicio=2025&mes_fin=8&anio_fin=2025
 
 
-RackSemanal
+RackSemanal      (Implementada en FRONT)
 - Obtener las reservas de una semana segun el dia por nombre (lunes, martes, ...): localhost:8080/rackSemanal/0
 El valor indica el numero de semana: 0->semana actual, 1-> prox semana, 2-> prox 2 semana, -1-> semana anterior.

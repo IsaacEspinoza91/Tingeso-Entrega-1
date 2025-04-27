@@ -84,9 +84,7 @@ const CreateKartForm = ({ onKartCreated }) => {
             onChange={handleChange}
           >
             <option value="Disponible">Disponible</option>
-            <option value="En Mantención">En Mantención</option>
-            <option value="En Uso">En Uso</option>
-            <option value="Deshabilitado">Deshabilitado</option>
+            <option value="No Disponible">No Disponible</option>
           </select>
           {errors.estado && <span className="error">{errors.estado}</span>}
         </div>

@@ -115,7 +115,7 @@ const PlanesList = () => {
           <tr>
             <th>ID Plan</th>
             <th>Descripción</th>
-            <th>Duración (min)</th>
+            <th>Duración Total (min)</th>
             <th>Precio Regular</th>
             <th>Precio Fin de Semana</th>
             <th>Precio Feriado</th>

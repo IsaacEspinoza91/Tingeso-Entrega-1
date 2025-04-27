@@ -51,14 +51,21 @@ public class ComprobanteService {
         // Obtener la cantidad de personas del grupo
         int totalPersonas = reserva.getTotalPersonas();
         // Obtener tarifa para cada integrante
-        double tarifaIntegrante = tarifaBase / totalPersonas;
+        double tarifaIntegrante = (double) tarifaBase / totalPersonas;  // Casteo de enteros
         // Obtner descuento extra para cada integrante
         double descuenteExtraIntegrante = descuentoExtra / totalPersonas;
         // Inicializacion de var para contar cumpleañeros. Regla de negocio, cantidad max de descuento por grupo
         int cantidadCumpleanieros = 0;
+        List<ClienteEntity> integrantes = reservaService.getIntegrantesById(reservaId);
+
+        // Caso en que la lista en que la reserva no tiene integrantes asociados. No se pueden crear detalles ni comprobante
+        if (integrantes.isEmpty()) throw new IllegalStateException("No hay clientes asociados a la reserva");
+
+        // Caso en que no estan todos los integrantes asignados a la reserva. No se pueden crear detalles ni comprobante
+        if (integrantes.size() != totalPersonas) throw new IllegalStateException("No estan todos los clientes asociados a la reserva");
 
         // Crear detalles para cada persona en la reserva. Iteramos sobre la lista de integrantes
-        for (ClienteEntity clienteActual : reservaService.getIntegrantesById(reservaId)) {
+        for (ClienteEntity clienteActual : integrantes) {
 
             DetalleComprobanteEntity detalle = crearDetalleComprobante(
                     comprobante, clienteActual, tarifaIntegrante,

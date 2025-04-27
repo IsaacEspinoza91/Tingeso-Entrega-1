@@ -4,9 +4,8 @@ import './DiaCalendario.css';
 const DiaCalendario = ({ nombreDia, reservas, fecha }) => {
   const fechaFormateada = fecha   // Formatear la fecha
     ? new Date(fecha).toLocaleDateString('es-CL', { 
-        weekday: 'short', 
         day: 'numeric', 
-        month: 'short' 
+        month: 'long' 
       })
     : '';
 

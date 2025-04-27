@@ -1,10 +1,14 @@
-import './Reservas.css'
+import React from 'react';
+import ReservasList from '../../components/reservas/ReservasList';
+import './Reservas.css';
 
-export default function Reservas() {
+const Reservas = () => {
   return (
-    <div className="page-container">
-      <h1>Reservas</h1>
-      {/* Contenido futuro */}
+    <div className="reservas-page">
+      <h1>Administración de Reservas</h1>
+      <ReservasList />
     </div>
-  )
-}
+  );
+};
+
+export default Reservas;

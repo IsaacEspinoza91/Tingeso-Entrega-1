@@ -153,7 +153,7 @@ public class ReservaService {
 
         // Caso en que se intentan agregar mas integrantes de la cantidad total de integrantes de la reserva
         if (reserva.getIntegrantes().size() >= reserva.getTotalPersonas()) {
-            return null;
+            throw new IllegalStateException("Ya no se puede asignar mas integrantes");
         } else {
             // Caso en que todavia no se agregan todos los integrantes a la reserva
             // Obtener cliente segun id

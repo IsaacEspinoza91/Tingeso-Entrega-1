@@ -1,10 +1,14 @@
-import './Comprobantes.css'
+import React from 'react';
+import ComprobantesList from '../../components/comprobantes/ComprobantesList';
+import './Comprobantes.css';
 
-export default function Comprobantes() {
+const Comprobantes = () => {
   return (
-    <div className="page-container">
-      <h1>Comprobantes</h1>
-      {/* Contenido futuro */}
+    <div className="comprobantes-page">
+      <h1>Administración de Comprobantes</h1>
+      <ComprobantesList />
     </div>
-  )
-}
+  );
+};
+
+export default Comprobantes;

@@ -132,7 +132,7 @@ const ClientesList = () => {
                 <td>{cliente.apellido}</td>
                 <td>{cliente.correo}</td>
                 <td>{cliente.telefono}</td>
-                <td>{new Date(cliente.fechaNacimiento).toLocaleDateString()}</td>
+                <td>{new Date(cliente.fechaNacimiento+"T00:00:00").toLocaleDateString()}</td>
                 <td className="actions-cell">
                   <button 
                     onClick={() => setEditingCliente(cliente)}
