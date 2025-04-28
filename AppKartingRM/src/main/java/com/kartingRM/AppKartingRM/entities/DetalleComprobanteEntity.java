@@ -20,11 +20,18 @@ public class DetalleComprobanteEntity {
 
     private double tarifa;
     private double descuentoGrupo;
+    private double porcentajeDescuentoGrupo;    // Guarda el valor de porcentaje para mostrar en la boleta
+
     private double descuentoEspecial;      // Descuento cliente frecuente o cumpleanios
+    private double porcentajeDescuentoEspecial;
+
     private double descuentoExtra = 0;         // Descuento manual extra, default 0
     private double montoFinal;             // Despues de aplicar tarifas y descuentos
     private double montoIva;
     private double montoTotal;             // Total incluyendo iva
+
+    private boolean tieneDescuentoCumpleanios = false;      // Por default ambos descuentos son falsos, despues se analiza si cambian
+    private boolean tieneDescuentoClienteFrecuente = false;
 
     @ManyToOne
     @JoinColumn(name = "id_comprobante")

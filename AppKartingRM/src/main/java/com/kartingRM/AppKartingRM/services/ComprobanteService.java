@@ -111,13 +111,16 @@ public class ComprobanteService {
             // Caso grupo 3 a 5, Cliente cumple años y hay cupo de descuento
             if (totalPersonas>=3 && totalPersonas<=5 && cantidadCompleanieros<1) {
                 porcentajeDescuentoEspecial = calcularDescuentoCumpleanios(cliente,fechaReserva);
+                detalle.setTieneDescuentoCumpleanios(true);
 
             } else if (totalPersonas>=6 && totalPersonas<=15 && cantidadCompleanieros <2) {   // Caso grupo de 6 a 15 y hay cupo)
                 porcentajeDescuentoEspecial = calcularDescuentoCumpleanios(cliente, fechaReserva);
+                detalle.setTieneDescuentoCumpleanios(true);
 
             }
         } else {    // Cliento no cumple años. Se verifica si es cliente frecuente
             porcentajeDescuentoEspecial = calcularDescuentoFrecuente(cliente, fechaReserva);
+            if (porcentajeDescuentoEspecial != 0.0) detalle.setTieneDescuentoClienteFrecuente(true);
         }
 
         // Calculamos el monto con descuentos. Utilizamos descuentos en cascada, es decir, el descuento siguiente
@@ -142,6 +145,9 @@ public class ComprobanteService {
         detalle.setMontoIva(iva);
         detalle.setMontoTotal(total);
 
+        // Guardaos los porcentajes de descuento en el objeto detalle
+        detalle.setPorcentajeDescuentoGrupo(porcentajeDescuentoGrupo);
+        detalle.setPorcentajeDescuentoEspecial(porcentajeDescuentoEspecial);
         return detalle;
     }
 
