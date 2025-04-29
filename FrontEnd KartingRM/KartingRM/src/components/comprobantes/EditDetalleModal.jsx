@@ -10,7 +10,9 @@ const EditDetalleModal = ({ detalle, onClose, onUpdate }) => {
     descuentoExtra: 0,
     montoFinal: 0,
     montoIva: 0,
-    montoTotal: 0
+    montoTotal: 0,
+    porcentajeDescuentoEspecial: 0,
+    porcentajeDescuentoGrupo: 0
   });
 
   const [errors, setErrors] = useState({});
@@ -25,7 +27,9 @@ const EditDetalleModal = ({ detalle, onClose, onUpdate }) => {
         descuentoExtra: detalle.descuentoExtra || 0,
         montoFinal: detalle.montoFinal || 0,
         montoIva: detalle.montoIva || 0,
-        montoTotal: detalle.montoTotal || 0
+        montoTotal: detalle.montoTotal || 0,
+        porcentajeDescuentoEspecial: detalle.porcentajeDescuentoEspecial || 0,
+        porcentajeDescuentoGrupo: detalle.porcentajeDescuentoGrupo || 0
       });
     }
   }, [detalle]);
@@ -90,33 +94,33 @@ const EditDetalleModal = ({ detalle, onClose, onUpdate }) => {
               value={formData.tarifa}
               onChange={handleChange}
               min="0"
-              step="0.01"
+              step="1"
             />
             {errors.tarifa && <span className="error">{errors.tarifa}</span>}
           </div>
 
           <div className="form-group">
-            <label>Descuento Grupo:</label>
+            <label>Porcentaje Descuento Grupo:</label>
             <input
               type="number"
               name="descuentoGrupo"
-              value={formData.descuentoGrupo}
+              value={formData.porcentajeDescuentoGrupo}
               onChange={handleChange}
               min="0"
-              step="0.01"
+              step="1"
             />
             {errors.descuentoGrupo && <span className="error">{errors.descuentoGrupo}</span>}
           </div>
 
           <div className="form-group">
-            <label>Descuento Especial:</label>
+            <label>Porcentaje Descuento Especial:</label>
             <input
               type="number"
               name="descuentoEspecial"
-              value={formData.descuentoEspecial}
+              value={formData.porcentajeDescuentoEspecial}
               onChange={handleChange}
               min="0"
-              step="0.01"
+              step="1"
             />
             {errors.descuentoEspecial && <span className="error">{errors.descuentoEspecial}</span>}
           </div>
@@ -129,49 +133,12 @@ const EditDetalleModal = ({ detalle, onClose, onUpdate }) => {
               value={formData.descuentoExtra}
               onChange={handleChange}
               min="0"
-              step="0.01"
+              step="1"
             />
             {errors.descuentoExtra && <span className="error">{errors.descuentoExtra}</span>}
           </div>
 
-          <div className="form-group">
-            <label>Monto Final:</label>
-            <input
-              type="number"
-              name="montoFinal"
-              value={formData.montoFinal}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-            />
-            {errors.montoFinal && <span className="error">{errors.montoFinal}</span>}
-          </div>
-
-          <div className="form-group">
-            <label>IVA:</label>
-            <input
-              type="number"
-              name="montoIva"
-              value={formData.montoIva}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-            />
-            {errors.montoIva && <span className="error">{errors.montoIva}</span>}
-          </div>
-
-          <div className="form-group">
-            <label>Total:</label>
-            <input
-              type="number"
-              name="montoTotal"
-              value={formData.montoTotal}
-              onChange={handleChange}
-              min="0"
-              step="0.01"
-            />
-            {errors.montoTotal && <span className="error">{errors.montoTotal}</span>}
-          </div>
+          <p>Los demás valores se calculan automáticamente</p>
 
           {errors.submit && <div className="error-message">{errors.submit}</div>}
 

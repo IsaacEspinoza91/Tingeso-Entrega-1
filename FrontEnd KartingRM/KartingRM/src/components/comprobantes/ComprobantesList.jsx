@@ -5,7 +5,10 @@ import ComprobanteSearch from './ComprobanteSearch';
 import EditComprobanteModal from './EditComprobanteModal';
 import ComprobanteDetails from './ComprobanteDetails';
 import DeleteConfirmationModal from './DeleteConfirmationModal';
+import PDFDownloadButton from './ComprobantePDF/PDFDownloadButton';
 import './ComprobantesList.css';
+
+
 
 const ComprobantesList = () => {
   const [comprobantes, setComprobantes] = useState([]);
@@ -158,6 +161,7 @@ const ComprobantesList = () => {
                     >
                       {viewingDetails === comprobante.idComprobante ? 'Ocultar' : 'Ver'} Detalles
                     </button>
+                    <PDFDownloadButton comprobante={comprobante} />
                     <button 
                       onClick={() => setEditingComprobante(comprobante)}
                       className="edit-button"

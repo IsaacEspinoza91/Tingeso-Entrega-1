@@ -55,14 +55,14 @@ const ClientesList = () => {
   const handleDeleteCliente = async (id) => {
     setIsDeleting(true);
     try {
-      await deleteCliente(id);
-      setClientes(clientes.filter(c => c.id !== id));
+      await deleteCliente(id);    // Llama a la api
+      setClientes(clientes.filter(c => c.id !== id)); // Actualiza el estado local
       
       if (filteredClientes) {
         setFilteredClientes(filteredClientes.filter(c => c.id !== id));
       }
       
-      setDeletingCliente(null);
+      setDeletingCliente(null);   // Cierra modal de confiramcion
     } catch (error) {
       console.error('Error al eliminar cliente:', error);
     } finally {
@@ -103,9 +103,11 @@ const ClientesList = () => {
 
       {deletingCliente && (
         <DeleteConfirmationModal 
-          cliente={deletingCliente}
+          item={deletingCliente}
+          itemType="cliente"
           onClose={() => setDeletingCliente(null)}
           onConfirm={handleDeleteCliente}
+          isDeleting={isDeleting}
         />
       )}
 

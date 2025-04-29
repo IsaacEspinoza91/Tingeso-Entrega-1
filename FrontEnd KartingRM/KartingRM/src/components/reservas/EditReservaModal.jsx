@@ -67,7 +67,7 @@ const EditReservaModal = ({ reserva, onClose, onUpdate }) => {
 
     setIsSubmitting(true);
     try {
-      // Actualizar datos básicos de la reserva
+      // Actualizar datos reserva
       const reservaData = {
         estado: formData.estado,
         totalPersonas: parseInt(formData.totalPersonas),
@@ -78,13 +78,13 @@ const EditReservaModal = ({ reserva, onClose, onUpdate }) => {
 
       const updatedReserva = await updateReserva(reserva.idReserva, reservaData);
 
-      // Actualizar cliente si cambió
+      // Actualizar cliente
       if (formData.idCliente !== reserva.reservante.id) {
         await updateClienteReserva(reserva.idReserva, formData.idCliente);
         updatedReserva.reservante.id = formData.idCliente;
       }
 
-      // Actualizar plan si cambió
+      // Actualizar plan
       if (formData.idPlan !== reserva.plan.idPlan) {
         await updatePlanReserva(reserva.idReserva, formData.idPlan);
         updatedReserva.plan.idPlan = formData.idPlan;

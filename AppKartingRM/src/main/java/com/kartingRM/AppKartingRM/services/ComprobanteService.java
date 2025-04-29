@@ -40,12 +40,6 @@ public class ComprobanteService {
         // Obtener reserva segun la id
         ReservaEntity reserva = reservaService.getReservaById(reservaId);
 
-        // Crear objeto comprobante y asignar reserva y estado de no pagado
-        ComprobanteEntity comprobante = new ComprobanteEntity();
-        comprobante.setReserva(reserva);
-        comprobante.setPagado(false);
-        comprobante = comprobanteRepository.save(comprobante);
-
         // Obtener precio de tarifa de la reserva segun el tipo de dia
         int tarifaBase = calcularTarifaBase(reserva,esFeriado);
         // Obtener la cantidad de personas del grupo
@@ -63,6 +57,14 @@ public class ComprobanteService {
 
         // Caso en que no estan todos los integrantes asignados a la reserva. No se pueden crear detalles ni comprobante
         if (integrantes.size() != totalPersonas) throw new IllegalStateException("No estan todos los clientes asociados a la reserva");
+
+
+        // Crear objeto comprobante y asignar reserva y estado de no pagado
+        ComprobanteEntity comprobante = new ComprobanteEntity();
+        comprobante.setReserva(reserva);
+        comprobante.setPagado(true);
+        comprobante = comprobanteRepository.save(comprobante);
+
 
         // Crear detalles para cada persona en la reserva. Iteramos sobre la lista de integrantes
         for (ClienteEntity clienteActual : integrantes) {
@@ -126,7 +128,7 @@ public class ComprobanteService {
         // Calculamos el monto con descuentos. Utilizamos descuentos en cascada, es decir, el descuento siguiente
         // se realiza sobre el valor anterior con descuento, no sobre el valor original
         double descuentoGrupo = tarifa * porcentajeDescuentoGrupo;
-        double descuentoEspecial = descuentoGrupo * porcentajeDescuentoEspecial;
+        double descuentoEspecial = (tarifa - descuentoGrupo) * porcentajeDescuentoEspecial;
         // Calcula el valor total de para un detalle (sin iva)
         double montoConDescuento = tarifa - descuentoGrupo - descuentoEspecial - descuentoExtra;
 
@@ -146,8 +148,8 @@ public class ComprobanteService {
         detalle.setMontoTotal(total);
 
         // Guardaos los porcentajes de descuento en el objeto detalle
-        detalle.setPorcentajeDescuentoGrupo(porcentajeDescuentoGrupo);
-        detalle.setPorcentajeDescuentoEspecial(porcentajeDescuentoEspecial);
+        detalle.setPorcentajeDescuentoGrupo(porcentajeDescuentoGrupo*100);
+        detalle.setPorcentajeDescuentoEspecial(porcentajeDescuentoEspecial*100);
         return detalle;
     }
 
@@ -318,6 +320,20 @@ public class ComprobanteService {
         detalle.setIdDetalle(id);
         detalle.setCliente(detalleOriginal.getCliente());
         detalle.setComprobante(detalleOriginal.getComprobante());
+
+        // Actualizar total del detalle
+        double descuentoGrupo = detalle.getTarifa() * (detalle.getPorcentajeDescuentoGrupo()/100);
+        double descuentoEspecial = (detalle.getTarifa() - descuentoGrupo) * (detalle.getPorcentajeDescuentoEspecial()/100);
+        double montoConDescuento = detalle.getTarifa() - descuentoGrupo - descuentoEspecial - detalle.getDescuentoExtra();
+
+        double iva = montoConDescuento * IVA;// calculo el valor del iva
+        double total = montoConDescuento + iva;// Calculo el total sumando iva
+
+        detalle.setDescuentoGrupo(descuentoGrupo);
+        detalle.setDescuentoEspecial(descuentoEspecial);
+        detalle.setMontoFinal(montoConDescuento);
+        detalle.setMontoIva(iva);
+        detalle.setMontoTotal(total);
 
         // Actualizar total del comprobante
         actualizarTotalComprobante(detalle.getComprobante().getIdComprobante());

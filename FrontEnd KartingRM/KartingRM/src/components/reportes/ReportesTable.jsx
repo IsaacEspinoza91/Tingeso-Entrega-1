@@ -6,14 +6,13 @@ const ReportesTable = ({ data, tipoReporte }) => {
     return <div className="no-data">No hay datos para mostrar</div>;
   }
 
-  // Obtener todos los meses únicos de todos los reportes
+  // Obtener todos los meses de todos los reportes
   const allMonths = new Set();
   data.forEach(item => {
     Object.keys(item.ingresosPorMes).forEach(month => allMonths.add(month));
   });
   const months = Array.from(allMonths).sort((a, b) => {
-    // Ordenar los meses cronológicamente
-    const [monthA, yearA] = a.split('-');
+    const [monthA, yearA] = a.split('-');  // Ordenar los meses cronologicamente
     const [monthB, yearB] = b.split('-');
     return new Date(`${monthA} 1, ${yearA}`) - new Date(`${monthB} 1, ${yearB}`);
   });

@@ -65,7 +65,7 @@ const CreateReservaForm = ({ onReservaCreated }) => {
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
       console.error('Error al crear reserva:', error);
-      setErrors({ submit: 'Error al crear reserva. Verifique los IDs o intente nuevamente.' });
+      setErrors({ submit: 'Error al crear reserva. Verifique los IDs, horario válido o intente nuevamente.' });
     } finally {
       setIsSubmitting(false);
     }

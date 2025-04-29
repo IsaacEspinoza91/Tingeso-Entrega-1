@@ -101,6 +101,12 @@ public class ReservaService {
         reserva.setIdReserva(id);
         reserva.setPlan(reservaOriginal.getPlan());
         reserva.setReservante(reservaOriginal.getReservante());
+
+        // Actualizacion nuevo hora de fin, caso cambio de plan o de hora de inicio
+        LocalTime nuevaHoraFin = reserva.getHoraInicio().plusMinutes(reserva.getPlan().getDuracionTotal());
+        reserva.setHoraFin(nuevaHoraFin);
+
+        // Falta verificar si cambio el tipo de plan para actualizar los tiempos o el horario para actualizar el horario final
         return reservaRepository.save(reserva);
     }
 
@@ -111,6 +117,10 @@ public class ReservaService {
         // Obtener objeto Cliente
         ClienteEntity cliente = clienteService.getClienteById(idCliente);
         reservaOriginal.setReservante(cliente);
+
+        // Actualizacion nuevo hora de fin, caso cambio de plan o de hora de inicio
+        LocalTime nuevaHoraFin = reservaOriginal.getHoraInicio().plusMinutes(reservaOriginal.getPlan().getDuracionTotal());
+        reservaOriginal.setHoraFin(nuevaHoraFin);
         return reservaRepository.save(reservaOriginal);
     }
 
@@ -121,6 +131,10 @@ public class ReservaService {
         // Obtener objeto Plan
         PlanEntity plan = planService.getPlanById(idPlan);
         reservaOriginal.setPlan(plan);
+
+        // Actualizacion nuevo hora de fin, caso cambio de plan o de hora de inicio
+        LocalTime nuevaHoraFin = reservaOriginal.getHoraInicio().plusMinutes(reservaOriginal.getPlan().getDuracionTotal());
+        reservaOriginal.setHoraFin(nuevaHoraFin);
         return reservaRepository.save(reservaOriginal);
     }
 

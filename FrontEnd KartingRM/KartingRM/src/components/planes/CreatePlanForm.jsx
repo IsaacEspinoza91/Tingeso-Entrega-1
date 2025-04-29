@@ -49,7 +49,7 @@ const CreatePlanForm = ({ onPlanCreated }) => {
       setSuccessMessage('Plan creado exitosamente!');
       setFormData({
         descripcion: '',
-        duracionTotal: 30,
+        duracionTotal: 0,
         precioRegular: 0,
         precioFinSemana: 0,
         precioFeriado: 0

@@ -1,8 +1,8 @@
 import React from 'react';
 import './DeleteConfirmationModal.css';
 
-const DeleteConfirmationModal = ({ cliente, onClose, onConfirm }) => {
-  if (!cliente) return null;
+const DeleteConfirmationModal = ({ item, itemType = 'cliente', onClose, onConfirm }) => {
+  if (!item) return null;
 
   return (
     <div className="modal-overlay">
@@ -13,7 +13,7 @@ const DeleteConfirmationModal = ({ cliente, onClose, onConfirm }) => {
         </div>
         
         <div className="confirmation-message">
-          ¿Estás seguro que deseas eliminar al cliente {cliente.nombre} {cliente.apellido} (RUT: {cliente.rut})?
+          ¿Estás seguro que deseas eliminar el {itemType} con {item.nombre} {item.apellido} (RUT: {item.rut})?
         </div>
 
         <div className="modal-actions">
@@ -22,7 +22,7 @@ const DeleteConfirmationModal = ({ cliente, onClose, onConfirm }) => {
           </button>
           <button 
             type="button" 
-            onClick={() => onConfirm(cliente.id)} 
+            onClick={() => onConfirm(item.id)} 
             className="delete-button"
           >
             Eliminar

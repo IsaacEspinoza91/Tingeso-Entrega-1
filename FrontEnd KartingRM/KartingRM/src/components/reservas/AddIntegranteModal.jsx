@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { addIntegrante } from '../../services/reservaService';
-import './AddIntegranteModal.css';
 
 const AddIntegranteModal = ({ reserva, onClose, onIntegranteAdded }) => {
   const [idCliente, setIdCliente] = useState('');

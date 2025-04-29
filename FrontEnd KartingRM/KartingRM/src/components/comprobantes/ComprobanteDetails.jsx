@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { 
   getDetallesByComprobante,
-  updateDetalle,
-  updateDetalleCliente,
   deleteDetalle
 } from '../../services/comprobanteService';
 import EditDetalleModal from './EditDetalleModal';
@@ -21,6 +19,7 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
     try {
       const data = await getDetallesByComprobante(comprobante.idComprobante);
       setDetalles(data);
+      comprobante.detalles = data; // Agregar detalles al comprobante PDF
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -36,8 +35,7 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
     setDetalles(detalles.map(d => 
       d.idDetalle === updatedDetalle.idDetalle ? updatedDetalle : d
     ));
-    // Actualizar el comprobante padre si es necesario
-    onUpdate({ ...comprobante });
+    onUpdate({ ...comprobante }); // Actualizar el comprobante padre si es necesario
   };
 
   const handleDeleteDetalle = async (idDetalle) => {
@@ -46,8 +44,7 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
       await deleteDetalle(idDetalle);
       setDetalles(detalles.filter(d => d.idDetalle !== idDetalle));
       setDeletingDetalle(null);
-      // Actualizar el comprobante padre si es necesario
-      onUpdate({ ...comprobante });
+      onUpdate({ ...comprobante }); // Actualizar el comprobante padre
     } catch (error) {
       console.error('Error al eliminar detalle:', error);
     } finally {
@@ -84,7 +81,9 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
           <tr>
             <th>Cliente</th>
             <th>Tarifa</th>
+            <th>% D.G</th>
             <th>Desc. Grupo</th>
+            <th>% D.E</th>
             <th>Desc. Especial</th>
             <th>Desc. Extra</th>
             <th>Monto Final</th>
@@ -103,7 +102,9 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
                   <small>(ID: {detalle.cliente.id})</small>
                 </td>
                 <td>${detalle.tarifa.toLocaleString()}</td>
+                <td>{detalle.porcentajeDescuentoGrupo}%</td>
                 <td>${detalle.descuentoGrupo.toLocaleString()}</td>
+                <td>{detalle.porcentajeDescuentoEspecial}%</td>
                 <td>${detalle.descuentoEspecial.toLocaleString()}</td>
                 <td>${detalle.descuentoExtra.toLocaleString()}</td>
                 <td>${detalle.montoFinal.toLocaleString()}</td>
@@ -115,13 +116,6 @@ const ComprobanteDetails = ({ comprobante, onUpdate }) => {
                     className="edit-button"
                   >
                     Editar
-                  </button>
-                  <button 
-                    onClick={() => setDeletingDetalle(detalle)}
-                    className="delete-button"
-                    disabled={isDeleting}
-                  >
-                    Eliminar
                   </button>
                 </td>
               </tr>

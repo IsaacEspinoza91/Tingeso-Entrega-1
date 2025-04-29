@@ -180,26 +180,33 @@ GET, Obtiene un detalle segun id de cliente e id de comprobante:   localhost:808
 
 POST, Crea detalle: localhost:8080/comprobantes/detalles?id_comprobante=3&id_cliente=3
 {
-  "tarifa": 15000,
-  "descuentoGrupo": 3000,
-  "descuentoEspecial": 0,
-  "montoTotal": 15000,
-  "descuentoExtra": 0,
-  "montoIva": 2850,
-  "montoFinal": 12000
+    "tarifa": 9933.0,
+    "descuentoGrupo": 3000.0,
+    "porcentajeDescuentoGrupo": 0.0,
+    "descuentoEspecial": 0.0,
+    "porcentajeDescuentoEspecial": 0.0,
+    "descuentoExtra": 1.0,
+    "montoFinal": 12000.0,
+    "montoIva": 2850.0,
+    "montoTotal": 15000.0,
+    "tieneDescuentoCumpleanios": false,
+    "tieneDescuentoClienteFrecuente": false,
 }
 		Si no se especifica     "descuentoExtra" es default 0
 
 PUT, update de los datos de un detalle segun id de detalle:  localhost:8080/comprobantes/detalles/update/1
 {
-    "idDetalle": null,
-    "tarifa": 9933,
-    "descuentoGrupo": 3000,
-    "descuentoEspecial": 0,
-    "descuentoExtra": 300,
-    "montoTotal": 15000,
-    "montoIva": 2850,
-    "montoFinal": 12000
+    "tarifa": 9933.0,
+    "descuentoGrupo": 3000.0,
+    "porcentajeDescuentoGrupo": 0.0,
+    "descuentoEspecial": 0.0,
+    "porcentajeDescuentoEspecial": 0.0,
+    "descuentoExtra": 1.0,
+    "montoFinal": 12000.0,
+    "montoIva": 2850.0,
+    "montoTotal": 15000.0,
+    "tieneDescuentoCumpleanios": false,
+    "tieneDescuentoClienteFrecuente": false,
 }
 
 PUT, update del cliente de un detalle segun id de detalle:  localhost:8080/comprobantes/detalles/update/{id_detalle}/cliente?id_cliente=2
@@ -238,3 +245,52 @@ Reportes         (Implementada en FRONT)
 RackSemanal      (Implementada en FRONT)
 - Obtener las reservas de una semana segun el dia por nombre (lunes, martes, ...): localhost:8080/rackSemanal/0
 El valor indica el numero de semana: 0->semana actual, 1-> prox semana, 2-> prox 2 semana, -1-> semana anterior.
+
+
+
+
+
+
+
+
+
+
+CONFIRMACION DE FUNCIONALIDADES EN FRONT
+Calendario CHECK
+Reportes CHECK
+Cliente:
+	C: Crear cliente CHECK
+	R: Lista clientes. Buscar por ID, RUT, Nombre Apellido   CHECK
+	U: Actualizacion cliente CHECK
+	D: Eliminar cliente CHECK   (No se actualiza pantalla automaticamente. Algo falla, debería hacerlo) (No borrar clientes para no perder info relacionada)
+
+Planes:
+	C: Crear plan CHECK
+	R: Lista planes y buscar segun id CHECK
+	U: Actualizar plan CHECK
+	D: Eliminar plan CHECK
+
+Karts:
+	C: Crear kart CHECK
+	R: Lista karts y buscar por id CHECK
+	U: Actulizar plan CHECK
+	D: Eliminar plan CHECK
+
+Reservas:
+	C: Crear reserva en horarios validos (condicion) CHECK
+	R: Lista reservas y buscar por id y cliente CHECK
+	U: Update reserva, consideran cambio de hora final cuando se cambia el plan o la hora de incio (No se actualiza pantalla automaticamente) CHECK
+	  Solo se puede agregar integrantes cuando todavia no se cumple el maximo de grupo CHECK
+	  Al actualizar total de integrantes. Se reinicia la lista de integrantes (Caso disminuir cantidad) CHECK
+	  Se puede agregar y quitar integrantes de la reserva CHECK
+	D: Eliminar reserva con y sin integrantes CHECK
+	  Solo se elimina reserva si no tiene un comprobante asociado
+
+Comprobantes:
+	C: Crea el comprobante con los detalles CHECK
+	  No se crea comprobante si no están todos los integrantes agregados
+	R: Lista de comprobantes y sus detalles. Busca por id  CHECK
+	U: Actualizacion de pagado y total de comprobante   CHECK
+	   En detalles:  Se actualiza el porcentaje los porcentajes de descuento y el valor de descuento extra. Los demas valores se calculan automaticamente por lo que no tiene sentido poder cambiarlos manualmente.
+	D: Eliminar comprobante con y sin detalles CHECK
+	   En detalle: No se puede eliminar un detalle en particular
