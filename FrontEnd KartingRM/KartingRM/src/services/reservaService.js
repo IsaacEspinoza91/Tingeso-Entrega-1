@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/reservas';
+const API_URL = 'http://localhost:8080/reservas';
 
 // Peticion GET de todas las reservas
 export const getReservas = async () => {

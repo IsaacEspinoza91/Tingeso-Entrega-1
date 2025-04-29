@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'api/clientes/';
+const API_URL = 'http://localhost:8080/clientes/';
 
 // Peticion GET de obtener todos los clientes
 export const getClientes = async () => {

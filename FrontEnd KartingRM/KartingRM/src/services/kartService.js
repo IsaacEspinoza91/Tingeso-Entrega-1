@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/karts/'; // Usando el proxy configurado en vite.config.js
+const API_URL = 'http://localhost:8080/karts/';
 
 // Peticion GET para obtener la lista de karts
 export const getKarts = async () => {

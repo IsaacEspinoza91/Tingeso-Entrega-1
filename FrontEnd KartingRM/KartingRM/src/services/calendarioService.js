@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/rackSemanal';
+const API_URL = 'http://localhost:8080/rackSemanal';
 
 export const getReservasSemana = async (semanaOffset = 0) => {
   try {

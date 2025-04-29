@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/comprobantes';
+const API_URL = 'http://localhost:8080/comprobantes';
 
 // Peticion GET para obtener todos los comprobantes
 export const getComprobantes = async () => {

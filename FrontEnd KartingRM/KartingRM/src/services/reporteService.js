@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = '/api/reportes/'; // OJO, recordar que en produccion hay que cambiar el vite.config.js
+const API_URL = 'http://localhost:8080/reportes/'; 
 
 // Peticion Get para obtener los reportes de ingresos segun planes
 export const getReporteIngresosPorVueltas = async (params) => {

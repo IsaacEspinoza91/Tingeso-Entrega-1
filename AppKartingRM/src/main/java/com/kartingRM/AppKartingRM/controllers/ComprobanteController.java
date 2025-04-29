@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/comprobantes")
+@CrossOrigin("*")
 public class ComprobanteController {
 
     @Autowired
