@@ -2,6 +2,7 @@ package com.kartingRM.AppKartingRM.services;
 
 import com.kartingRM.AppKartingRM.entities.*;
 import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +52,9 @@ public class ReservaService {
     // Considera que no existan reservas en el horario nuevo, ademas de que se ingresa automaticamente
     //    la hora de fin segun el tiempo del plan
     public ReservaEntity createReserva(ReservaEntity reserva, Long idCliente, Long idPlan, Boolean esFeriado){
+        if (planService.getPlanById(idPlan) == null) {
+            throw new IllegalStateException("No existe el plan");
+        }
         PlanEntity plan = planService.getPlanById(idPlan);
         ClienteEntity cliente = clienteService.getClienteById(idCliente);
         // Caso parametros validos de cliente, plan y hora de inicio
@@ -89,7 +93,7 @@ public class ReservaService {
 
             return reservaRepository.save(reserva);
         } else {
-            throw new RuntimeException("Cliente no encontrado, plan no existe, o hora erronea");
+            throw new RuntimeException("Cliente no encontrado, plan no existe, o hora errónea");
         }
     }
 
@@ -97,10 +101,11 @@ public class ReservaService {
     public ReservaEntity updateReserva(Long id, ReservaEntity reserva){
         // Obtiene el objeto Reserva sin modificar
         ReservaEntity reservaOriginal = reservaRepository.findById(id).get();
-        // Seteamos a los valores referenciados FK de la reserva original
+        // Seteamos a los valores referenciados FK y otros campos de la reserva original
         reserva.setIdReserva(id);
         reserva.setPlan(reservaOriginal.getPlan());
         reserva.setReservante(reservaOriginal.getReservante());
+        reserva.setFecha(reservaOriginal.getFecha());
 
         // Actualizacion nuevo hora de fin, caso cambio de plan o de hora de inicio
         LocalTime nuevaHoraFin = reserva.getHoraInicio().plusMinutes(reserva.getPlan().getDuracionTotal());
@@ -141,10 +146,13 @@ public class ReservaService {
     // Eliminar una reserva segun su id
     public boolean deleteReserva(Long id) throws Exception{
         try{
+            if (!reservaRepository.existsById(id)) {
+                throw new EntityNotFoundException("Reserva no encontrada");
+            }
             reservaRepository.deleteById(id);
             return true;
         } catch (Exception e){
-            throw new Exception(e.getMessage());
+            throw new Exception("Error eliminado reserva: "+ e.getMessage());
         }
     }
 
@@ -173,10 +181,11 @@ public class ReservaService {
             // Obtener cliente segun id
             ClienteEntity cliente = clienteService.getClienteById(clienteId);
 
-            // Si es que la reserva no tiene al cliente como integrante, se agrega, en caso contrario no
+            // Si es que la reserva no tiene al cliente como integrante, se agrega
             if (!reserva.getIntegrantes().contains(cliente)) {
                 reserva.getIntegrantes().add(cliente);
             }
+            // Si la reserva ya tenia a el cliente. No se agrega a la lista
 
             return reservaRepository.save(reserva);
         }

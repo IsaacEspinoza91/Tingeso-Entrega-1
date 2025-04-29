@@ -76,8 +76,7 @@ class RackReservaServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener rack semanal - Semana actual")
-    void obtenerRackSemanal_SemanaActual_RetornaReservasConfirmadas() {
+    void obtenerRackSemanal_SemanaActual_deberiaRetornarReservasConfirmadas() {
         // Given
         int semanaOffset = 0; // Semana actual
 
@@ -100,8 +99,7 @@ class RackReservaServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener rack semanal - Semana siguiente")
-    void obtenerRackSemanal_SemanaSiguiente_RetornaVacio() {
+    void obtenerRackSemanal_SemanaSiguiente_deberiaRetornarListaVacia() {
         // Given
         int semanaOffset = 1; // Semana siguiente
 
@@ -118,7 +116,6 @@ class RackReservaServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener rack semanal - Verifica estructura de días")
     void obtenerRackSemanal_VerificaEstructuraDias() {
         // When
         RackSemanalDTO rackSemanal = rackReservaService.obtenerRackSemanal(0);
@@ -137,7 +134,6 @@ class RackReservaServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener rack semanal - Verifica formato de nombres")
     void obtenerRackSemanal_VerificaFormatoNombres() {
         // When
         RackSemanalDTO rackSemanal = rackReservaService.obtenerRackSemanal(0);
@@ -156,8 +152,9 @@ class RackReservaServiceTest {
     }
 
     @Test
-    @DisplayName("Obtener rack semanal - No incluye reservas no confirmadas")
-    void obtenerRackSemanal_NoIncluyeReservasNoConfirmadas() {
+    void obtenerRackSemanal_NoIncluyeReservasNoConfirmadas_deberiaRetornarListaVacia() {
+        // Para que las reservas sean consideradas en el rack, deben estar confirmadas
+
         // Given
         String diaReservaNoConfirmada = reservaNoConfirmada.getFecha()
                 .getDayOfWeek()

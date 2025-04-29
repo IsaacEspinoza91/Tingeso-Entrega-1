@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ComprobanteService {
@@ -86,7 +87,7 @@ public class ComprobanteService {
 
 
     // Funcion que crea un objeto DetalleComprobante desde la entidad Comprobante
-    private DetalleComprobanteEntity crearDetalleComprobante(ComprobanteEntity comprobante,
+    public DetalleComprobanteEntity crearDetalleComprobante(ComprobanteEntity comprobante,
                                                              ClienteEntity cliente,
                                                              double tarifa,
                                                              double descuentoExtra,
@@ -154,7 +155,7 @@ public class ComprobanteService {
     }
 
     // Obtiene el precio de tarifa del arriendo segun el dia (semana, fin de semana o feriado)
-    private int calcularTarifaBase(ReservaEntity reserva, boolean esFeriado) {
+    public int calcularTarifaBase(ReservaEntity reserva, boolean esFeriado) {
         // Para dias feriados se ingresa valor boleano
 
         LocalDate fecha = reserva.getFecha();
@@ -167,7 +168,7 @@ public class ComprobanteService {
     }
 
     // Obtiene el valor porcentual del descuento segun el numero de personas del grupo
-    private double calcularDescuentoGrupo(int totalPersonas) {
+    public double calcularDescuentoGrupo(int totalPersonas) {
         if (totalPersonas >= 11) return 0.30;
         if (totalPersonas >= 6) return 0.20;
         if (totalPersonas >= 3) return 0.10;
@@ -176,7 +177,7 @@ public class ComprobanteService {
     }
 
     // Determina si el cliente obtiene el 50% de descuento por reservar el karting el dia de su compleanios
-    private double calcularDescuentoCumpleanios(ClienteEntity cliente, LocalDate fecha) {
+    public double calcularDescuentoCumpleanios(ClienteEntity cliente, LocalDate fecha) {
         if (clienteService.cumpleAnios(cliente, fecha)) {
             return 0.5;
         }
@@ -184,7 +185,7 @@ public class ComprobanteService {
     }
 
     // Obtiene el valor porcentual del descuento para clientes frecuentes
-    private double calcularDescuentoFrecuente(ClienteEntity cliente, LocalDate fecha) {
+    public double calcularDescuentoFrecuente(ClienteEntity cliente, LocalDate fecha) {
         // Obtener cantidad de veces que el cliente utiliza el karting en el mes actual
         int visitas = clienteService.obtenerVecesUtilizadoKarting(cliente.getId(), fecha.getYear(), fecha.getMonthValue());
         if (visitas >= 7) return 0.30;
@@ -344,15 +345,16 @@ public class ComprobanteService {
     // Actualizar detalle existente
     @Transactional
     public DetalleComprobanteEntity updateClienteDeDetalle(Long id, Long idCliente) {
-        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id).get();
+        DetalleComprobanteEntity detalleOriginal = detalleComprobanteRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("No se encontró el detalle con ID: " + id));
 
         ClienteEntity cliente = clienteService.getClienteById(idCliente);
-
+        if (cliente == null) {
+            throw new NoSuchElementException("No se encontró el cliente con ID: " + idCliente);
+        }
         detalleOriginal.setCliente(cliente);
-
         return detalleComprobanteRepository.save(detalleOriginal);
     }
-
 
     // Eliminar detalle
     @Transactional
@@ -384,10 +386,10 @@ public class ComprobanteService {
             actualizarTotalComprobante(comprobante.getIdComprobante());
 
             // Elimina el detalle de la base de datos
-            detalleComprobanteRepository.deleteById(id);
+            detalleComprobanteRepository.delete(detalle);
             return true;
         } catch (Exception e) {
-            throw new Exception(e.getMessage());
+            throw new Exception("Error al eliminar DetalleComprobante: " + e.getMessage(), e);
         }
     }
 }

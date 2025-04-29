@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PlanService {
@@ -18,8 +19,12 @@ public class PlanService {
         return planRepository.findAll();
     }
 
-    public PlanEntity getPlanById(Long id){
-        return planRepository.findById(id).get();
+    public PlanEntity getPlanById(Long id) {
+        Optional<PlanEntity> planOptional = planRepository.findById(id);
+        if (planOptional.isEmpty()) {
+            throw new EntityNotFoundException("Plan con ID " + id + " no encontrado");
+        }
+        return planOptional.get();
     }
 
     public PlanEntity createPlan(PlanEntity plan){
@@ -31,16 +36,11 @@ public class PlanService {
         return planRepository.save(plan);
     }
 
-    public boolean deletePlan(Long id) throws Exception {
-        try {
-            if (!planRepository.existsById(id)) {
-                throw new EntityNotFoundException("Plan con ID " + id + " no encontrado");
-            }
-            planRepository.deleteById(id);
-            return true;
-        } catch (Exception e) {
-            throw new Exception(e.getMessage());
+    public boolean deletePlan(Long id) throws EntityNotFoundException {
+        if (!planRepository.existsById(id)) {
+            throw new EntityNotFoundException("Plan con ID " + id + " no encontrado");
         }
-
+        planRepository.deleteById(id);
+        return true;
     }
 }

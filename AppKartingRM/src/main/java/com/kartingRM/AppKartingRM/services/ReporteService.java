@@ -99,7 +99,7 @@ public class ReporteService {
     // Funcion privada para obtener una lista con los nombres de mes-anio entre dos fechas
     //   Es utilizada para generar reportes de ingresos. Resulta util para casos donde los ingresos sean 0 y
     //   no se encuentre registros en la base de datos para obtener su nombre
-    private List<String> generarMesesEnRango(int mesInicio, int anioInicio, int mesFin, int anioFin) {
+    public List<String> generarMesesEnRango(int mesInicio, int anioInicio, int mesFin, int anioFin) {
         List<String> meses = new ArrayList<>();
         LocalDate fechaInicio = LocalDate.of(anioInicio, mesInicio, 1);
         LocalDate fechaFin = LocalDate.of(anioFin, mesFin, 1);
@@ -114,7 +114,7 @@ public class ReporteService {
 
     // Funcion privada que obtiene el nombre de un mes segun su numero
     //   Es utilizada dentro para generar reportes de datos
-    private String obtenerNombreMes(int mes) {
+    public String obtenerNombreMes(int mes) {
         if (mes > 0 && mes < 13) {
             String[] nombresMeses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
                     "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
@@ -127,7 +127,7 @@ public class ReporteService {
 
     // Funcion privada para validar y los rangos de dos fecha de inicio y fin (mes y anio) son validas
     //    Es utilizada como condicion al generar reportes
-    private void validarRangoFechas(int mesInicio, int anioInicio, int mesFin, int anioFin) {
+    public void validarRangoFechas(int mesInicio, int anioInicio, int mesFin, int anioFin) {
         if (anioInicio > anioFin || (anioInicio == anioFin && mesInicio > mesFin)) {
             throw new IllegalArgumentException("Rango de fechas inválido. El inicio debe ser anterior al fin.");
         }

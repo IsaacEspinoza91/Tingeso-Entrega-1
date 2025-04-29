@@ -2,204 +2,492 @@ package com.kartingRM.AppKartingRM.services;
 
 import com.kartingRM.AppKartingRM.entities.*;
 import com.kartingRM.AppKartingRM.repositories.ReservaRepository;
-import org.junit.jupiter.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Import;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@DataJpaTest
-@Import({ReservaService.class, PlanService.class, ClienteService.class})
 class ReservaServiceTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @Mock
     private ReservaRepository reservaRepository;
 
-    @Autowired
-    private ReservaService reservaService;
-
-    @Autowired
+    @Mock
     private PlanService planService;
 
-    @Autowired
+    @Mock
     private ClienteService clienteService;
 
-    private ClienteEntity cliente;
-    private PlanEntity plan;
+    @InjectMocks
+    private ReservaService reservaService;
+
     private ReservaEntity reserva;
+    private PlanEntity plan;
+    private ClienteEntity cliente;
 
     @BeforeEach
     void setUp() {
-        // Configuración inicial común para todas las pruebas
-        cliente = new ClienteEntity();
-        cliente.setNombre("Juan");
-        cliente.setApellido("Pérez");
-        cliente.setRut("12.345.678-9");
-        entityManager.persist(cliente);
+        MockitoAnnotations.openMocks(this);
 
+        // Configurar datos de prueba
         plan = new PlanEntity();
+        plan.setIdPlan(1L);
         plan.setDescripcion("Plan Básico");
-        plan.setDuracionTotal(60);
+        plan.setDuracionTotal(60); // 60 minutos de duración
         plan.setPrecioRegular(10000);
         plan.setPrecioFinSemana(12000);
         plan.setPrecioFeriado(15000);
-        entityManager.persist(plan);
+
+        cliente = new ClienteEntity();
+        cliente.setId(1L);
+        cliente.setNombre("Juan");
+        cliente.setApellido("Pérez");
 
         reserva = new ReservaEntity();
-        reserva.setReservante(cliente);
-        reserva.setPlan(plan);
+        reserva.setIdReserva(1L);
         reserva.setFecha(LocalDate.now().plusDays(1));
         reserva.setHoraInicio(LocalTime.of(15, 0));
         reserva.setHoraFin(LocalTime.of(16, 0));
         reserva.setEstado("confirmada");
         reserva.setTotalPersonas(4);
-        entityManager.persist(reserva);
-
-        entityManager.flush();
+        reserva.setPlan(plan);
+        reserva.setReservante(cliente);
+        reserva.setIntegrantes(new ArrayList<>());
     }
 
     @Test
-    @DisplayName("Obtener todas las reservas")
-    void getReservas_RetornaListaReservas() {
+    void getReservas_deberiaRetornarListaReservas() {
+        // Given
+        when(reservaRepository.findAll()).thenReturn(Collections.singletonList(reserva));
+
         // When
-        List<ReservaEntity> reservas = reservaService.getReservas();
+        List<ReservaEntity> result = reservaService.getReservas();
 
         // Then
-        assertFalse(reservas.isEmpty());
-        assertEquals(1, reservas.size());
+        assertEquals(1, result.size());
+        assertEquals(reserva, result.get(0));
+        verify(reservaRepository).findAll();
     }
 
     @Test
-    @DisplayName("Obtener reserva por ID - Cuando existe")
-    void getReservaById_WhenExists_ReturnsReserva() {
+    void getReservaById_existeReserva_deberiaRetornarReserva() {
+        // Given
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+
         // When
-        ReservaEntity foundReserva = reservaService.getReservaById(reserva.getIdReserva());
+        ReservaEntity result = reservaService.getReservaById(1L);
 
         // Then
-        assertNotNull(foundReserva);
-        assertEquals(reserva.getIdReserva(), foundReserva.getIdReserva());
+        assertNotNull(result);
+        assertEquals(reserva, result);
+        verify(reservaRepository).findById(1L);
     }
 
     @Test
-    @DisplayName("Obtener reserva por ID - Cuando no existe")
-    void getReservaById_WhenNotExists_ThrowsException() {
-        // When & Then
+    void getReservaById_noExisteReserva_deberiaLanzaThrowException() {
+        // Given
+        when(reservaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        // When y then
         assertThrows(NoSuchElementException.class, () -> {
-            reservaService.getReservaById(999L);
+            reservaService.getReservaById(99L);
         });
     }
 
     @Test
-    @DisplayName("Obtener reservas por cliente ID")
-    void getReservasByClienteId_ReturnsReservasCliente() {
+    void getReservasByClienteId_deberiaRetornarReservasDeCliente() {
+        // Given
+        when(reservaRepository.findByReservanteId(1L)).thenReturn(Collections.singletonList(reserva));
+
         // When
-        List<ReservaEntity> reservas = reservaService.getReservasByClienteId(cliente.getId());
+        List<ReservaEntity> result = reservaService.getReservasByClienteId(1L);
 
         // Then
-        assertFalse(reservas.isEmpty());
-        assertEquals(1, reservas.size());
-        assertEquals(cliente.getId(), reservas.get(0).getReservante().getId());
+        assertEquals(1, result.size());
+        assertEquals(reserva, result.get(0));
+        verify(reservaRepository).findByReservanteId(1L);
     }
 
     @Test
-    @DisplayName("Crear reserva - Horario válido día semana")
-    void createReserva_HorarioValidoDiaSemana_ReturnsSavedReserva() {
+    void createReserva_tiempoValidoSemana_deberiaReservaGuardada() {
         // Given
         ReservaEntity newReserva = new ReservaEntity();
-        newReserva.setFecha(LocalDate.now().plusDays(2)); // Día de semana
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.TUESDAY)); // Martes
         newReserva.setHoraInicio(LocalTime.of(15, 0));
         newReserva.setTotalPersonas(3);
 
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
         // When
-        ReservaEntity savedReserva = reservaService.createReserva(newReserva, cliente.getId(), plan.getIdPlan(), false);
+        ReservaEntity result = reservaService.createReserva(newReserva, 1L, 1L, false);
 
         // Then
-        assertNotNull(savedReserva.getIdReserva());
-        assertEquals(LocalTime.of(16, 0), savedReserva.getHoraFin());
+        assertNotNull(result);
+        assertEquals(cliente, result.getReservante());
+        assertEquals(plan, result.getPlan());
+        assertEquals(LocalTime.of(16, 0), result.getHoraFin());
+        verify(reservaRepository).save(any(ReservaEntity.class));
     }
 
     @Test
-    @DisplayName("Crear reserva - Horario inválido día semana")
-    void createReserva_HorarioInvalidoDiaSemana_ThrowsException() {
+    void createReserva_tiempoValidoSemanaFeriado_deberiaReservaGuardada() {
         // Given
         ReservaEntity newReserva = new ReservaEntity();
-        newReserva.setFecha(LocalDate.now().plusDays(2)); // Día de semana
-        newReserva.setHoraInicio(LocalTime.of(13, 0)); // Fuera de horario
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.TUESDAY)); // Martes
+        newReserva.setHoraInicio(LocalTime.of(15, 0));
         newReserva.setTotalPersonas(3);
 
-        // When & Then
-        assertThrows(IllegalStateException.class, () -> {
-            reservaService.createReserva(newReserva, cliente.getId(), plan.getIdPlan(), false);
-        });
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        ReservaEntity result = reservaService.createReserva(newReserva, 1L, 1L, true);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(cliente, result.getReservante());
+        assertEquals(plan, result.getPlan());
+        assertEquals(LocalTime.of(16, 0), result.getHoraFin());
+        verify(reservaRepository).save(any(ReservaEntity.class));
     }
 
     @Test
-    @DisplayName("Crear reserva - Horario válido fin de semana")
-    void createReserva_HorarioValidoFinSemana_ReturnsSavedReserva() {
+    void createReserva_tiempoValidoFinSemana_deberiaReservaGuardada() {
         // Given
         ReservaEntity newReserva = new ReservaEntity();
         newReserva.setFecha(LocalDate.now().with(DayOfWeek.SATURDAY)); // Sábado
         newReserva.setHoraInicio(LocalTime.of(11, 0));
         newReserva.setTotalPersonas(3);
 
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
         // When
-        ReservaEntity savedReserva = reservaService.createReserva(newReserva, cliente.getId(), plan.getIdPlan(), false);
+        ReservaEntity result = reservaService.createReserva(newReserva, 1L, 1L, false);
 
         // Then
-        assertNotNull(savedReserva.getIdReserva());
-        assertEquals(LocalTime.of(12, 0), savedReserva.getHoraFin());
+        assertNotNull(result);
+        assertEquals(LocalTime.of(12, 0), result.getHoraFin());
     }
 
     @Test
-    @DisplayName("Actualizar reserva")
-    void updateReserva_ReturnsUpdatedReserva() {
+    void createReserva_tiemposInvalidos_deberiaLanzarThrowException() {
         // Given
-        reserva.setTotalPersonas(5);
+        ReservaEntity existingReserva = new ReservaEntity();
+        existingReserva.setIdReserva(2L);
+        existingReserva.setFecha(reserva.getFecha());
+        existingReserva.setHoraInicio(LocalTime.of(15, 30));
+        existingReserva.setHoraFin(LocalTime.of(16, 30));
 
-        // When
-        ReservaEntity updatedReserva = reservaService.updateReserva(reserva.getIdReserva(), reserva);
+        ReservaEntity newReserva = new ReservaEntity();
+        newReserva.setFecha(reserva.getFecha());
+        newReserva.setHoraInicio(LocalTime.of(15, 0));
+        newReserva.setTotalPersonas(2);
 
-        // Then
-        assertEquals(5, updatedReserva.getTotalPersonas());
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any()))
+                .thenReturn(Collections.singletonList(existingReserva));
+
+        // When y then
+        assertThrows(IllegalStateException.class, () -> {
+            reservaService.createReserva(newReserva, 1L, 1L, false);
+        });
     }
 
     @Test
-    @DisplayName("Eliminar reserva - Cuando existe")
-    void deleteReserva_WhenExists_ReturnsTrue() throws Exception {
+    void createReserva_tiempoInicioInvalidoSemana_deberiaLanzarThrowException() {
+        // Given
+        ReservaEntity newReserva = new ReservaEntity();
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.MONDAY)); // Lunes
+        newReserva.setHoraInicio(LocalTime.of(13, 0)); // Antes de las 14:00
+        newReserva.setTotalPersonas(2);
+
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+
+        // When y then
+        assertThrows(IllegalStateException.class, () -> {
+            reservaService.createReserva(newReserva, 1L, 1L, false);
+        });
+    }
+
+    @Test
+    void createReserva_tiempoFinalInvalidoSemana_deberiaThrowException() {
+        // Given
+        ReservaEntity newReserva = new ReservaEntity();
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.MONDAY)); // Lunes
+        newReserva.setHoraInicio(LocalTime.of(22, 10));
+        newReserva.setHoraFin(LocalTime.of(22, 30)); // Despues de hora de termino Karting 22:00
+
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+
+        // When y then
+        assertThrows(IllegalStateException.class, () -> {
+            reservaService.createReserva(newReserva, 1L, 1L, false);
+        });
+    }
+
+    @Test
+    void createReserva_tiempoClientePlanTodosInvalidos_deberiaLanzarThrowException() {
+        // Given
+        ReservaEntity newReserva = new ReservaEntity();
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.MONDAY)); // Lunes
+
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+
+        // When y then
+        assertThrows(RuntimeException.class, () -> {
+            reservaService.createReserva(newReserva, 1L, 1L, false);
+        });
+    }
+
+    @Test
+    void createReserva_tiempoInvalidoFinSemana_deberiaLanzarThrowException() {
+        // Given
+        ReservaEntity newReserva = new ReservaEntity();
+        newReserva.setFecha(LocalDate.now().with(DayOfWeek.SUNDAY)); // Domingo
+        newReserva.setHoraInicio(LocalTime.of(9, 0)); // Antes de las 10:00
+        newReserva.setTotalPersonas(2);
+
+        when(planService.getPlanById(1L)).thenReturn(plan);
+        when(clienteService.getClienteById(1L)).thenReturn(cliente);
+        when(reservaRepository.findReservasExistentesEnTiempo(any(), any(), any())).thenReturn(Collections.emptyList());
+
+        // When y then
+        assertThrows(IllegalStateException.class, () -> {
+            reservaService.createReserva(newReserva, 1L, 1L, false);
+        });
+    }
+
+    @Test
+    void updateReserva_deberiaActualizarTiemposDeReserva() {
+        // Given
+        ReservaEntity updatedData = new ReservaEntity();
+        updatedData.setHoraInicio(LocalTime.of(16, 0));
+        updatedData.setEstado("modificada");
+        updatedData.setTotalPersonas(5);
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
         // When
-        boolean result = reservaService.deleteReserva(reserva.getIdReserva());
+        ReservaEntity result = reservaService.updateReserva(1L, updatedData);
+
+        // Then
+        assertEquals(1L, result.getIdReserva());
+        assertEquals(LocalTime.of(16, 0), result.getHoraInicio());
+        assertEquals(LocalTime.of(17, 0), result.getHoraFin());
+        assertEquals("modificada", result.getEstado());
+        assertEquals(5, result.getTotalPersonas());
+    }
+
+    @Test
+    void updateClienteDeReserva_deberiaRetornarReservanteActualizado() {
+        // Given
+        ClienteEntity nuevoCliente = new ClienteEntity();
+        nuevoCliente.setId(2L);
+        nuevoCliente.setNombre("Ana");
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(clienteService.getClienteById(2L)).thenReturn(nuevoCliente);
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        ReservaEntity result = reservaService.updateClienteDeReserva(1L, 2L);
+
+        // Then
+        assertEquals(nuevoCliente, result.getReservante());
+        assertEquals(LocalTime.of(16, 0), result.getHoraFin());
+    }
+
+    @Test
+    void updatePlanDeReserva_deberiarRetornarReservaConPlanActualizadoYTiempoActualizado() {
+        // Given
+        PlanEntity nuevoPlan = new PlanEntity();
+        nuevoPlan.setIdPlan(2L);
+        nuevoPlan.setDuracionTotal(90); // 90 minutos
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(planService.getPlanById(2L)).thenReturn(nuevoPlan);
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        ReservaEntity result = reservaService.updatePlanDeReserva(1L, 2L);
+
+        // Then
+        assertEquals(nuevoPlan, result.getPlan());
+        assertEquals(LocalTime.of(16, 30), result.getHoraFin());
+    }
+
+    @Test
+    void deleteReserva_existeReserva_deberiaRetornarTrue() throws Exception {
+        // Given
+        when(reservaRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(reservaRepository).deleteById(1L);
+
+        // When
+        boolean result = reservaService.deleteReserva(1L);
 
         // Then
         assertTrue(result);
-        assertFalse(reservaRepository.existsById(reserva.getIdReserva()));
+        verify(reservaRepository).deleteById(1L);
     }
 
     @Test
-    @DisplayName("Agregar integrante a reserva")
-    void agregarIntegrante_WhenSpaceAvailable_ReturnsUpdatedReserva() {
+    void deleteReserva_noExisteReserva_deberiaLanzarThrowException() {
         // Given
-        ClienteEntity nuevoIntegrante = new ClienteEntity();
-        nuevoIntegrante.setNombre("Ana");
-        nuevoIntegrante.setApellido("Gómez");
-        nuevoIntegrante.setRut("98.765.432-1");
-        entityManager.persist(nuevoIntegrante);
-        entityManager.flush();
+        when(reservaRepository.existsById(99L)).thenReturn(false);
+
+        // When y then
+        assertThrows(Exception.class, () -> {
+            reservaService.deleteReserva(99L);
+        });
+    }
+
+    @Test
+    void agregarIntegrante_noSeCumpleMaximoGrupoTodavia_deberiaAgregarIntegrante() {
+        // Given
+        ClienteEntity integrante = new ClienteEntity();
+        integrante.setId(2L);
+        reserva.setTotalPersonas(2); // Capacidad para 2 integrantes
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(clienteService.getClienteById(2L)).thenReturn(integrante);
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // When
-        ReservaEntity updatedReserva = reservaService.agregarIntegrante(reserva.getIdReserva(), nuevoIntegrante.getId());
+        ReservaEntity result = reservaService.agregarIntegrante(1L, 2L);
 
         // Then
-        assertTrue(updatedReserva.getIntegrantes().contains(nuevoIntegrante));
+        assertEquals(1, result.getIntegrantes().size());
+        assertTrue(result.getIntegrantes().contains(integrante));
+    }
+
+    @Test
+    void agregarIntegrante_seCumpleMaximoGrupo_deberiaLanzarThrowException() {
+        // Given
+        ClienteEntity integranteExistente = new ClienteEntity();
+        integranteExistente.setId(2L);
+        reserva.setTotalPersonas(1); // Capacidad para 1 integrante
+        reserva.getIntegrantes().add(integranteExistente);
+
+        ClienteEntity nuevoIntegrante = new ClienteEntity();
+        nuevoIntegrante.setId(3L);
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(clienteService.getClienteById(3L)).thenReturn(nuevoIntegrante);
+
+        // When y then
+        assertThrows(IllegalStateException.class, () -> {
+            reservaService.agregarIntegrante(1L, 3L);
+        });
+    }
+
+    @Test
+    void agregarIntegrante_noSeCumpleCapacidad_noDeberiaAgregarIntegrante() {
+        // Given
+        ClienteEntity integrante = new ClienteEntity();
+        integrante.setId(1L);
+        ClienteEntity integrante2 = new ClienteEntity();
+        integrante2.setId(2L);
+        reserva.setTotalPersonas(2);
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(clienteService.getClienteById(1L)).thenReturn(integrante);
+        when(clienteService.getClienteById(2L)).thenReturn(integrante);
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        reservaService.agregarIntegrante(1L, 1L);
+        ReservaEntity result = reservaService.agregarIntegrante(1L, 2L);
+
+        // Then
+        assertEquals(1, result.getIntegrantes().size());
+        assertTrue(result.getIntegrantes().contains(integrante));
+    }
+
+    @Test
+    void quitarIntegrante_deberiaQuitarIntegrante() {
+        // Given
+        ClienteEntity integrante = new ClienteEntity();
+        integrante.setId(2L);
+        reserva.getIntegrantes().add(integrante);
+
+        when(reservaRepository.findById(1L)).thenReturn(Optional.of(reserva));
+        when(clienteService.getClienteById(2L)).thenReturn(integrante);
+        when(reservaRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // When
+        ReservaEntity result = reservaService.quitarIntegrante(1L, 2L);
+
+        // Then
+        assertTrue(result.getIntegrantes().isEmpty());
+    }
+
+    @Test
+    void getIntegrantesById_existeReserva_deberiaRetornarIntegrantes() {
+        // Given
+        Long reservaId = 1L;
+        ClienteEntity integrante1 = new ClienteEntity(2L, "9876543-2", "Ana", "López", "ana@mail.com", "987654321", LocalDate.of(2002, 5, 10), Collections.emptyList(), Collections.emptyList());
+        ClienteEntity integrante2 = new ClienteEntity(3L, "11223344-5", "Carlos", "González", "carlos@mail.com", "112233445", LocalDate.of(1998, 11, 20), Collections.emptyList(), Collections.emptyList());
+        reserva.setIntegrantes(Arrays.asList(integrante1, integrante2));
+        when(reservaRepository.findById(reservaId)).thenReturn(Optional.of(reserva));
+
+        // When
+        List<ClienteEntity> result = reservaService.getIntegrantesById(reservaId);
+
+        // Then
+        assertEquals(2, result.size());
+        assertTrue(result.contains(integrante1));
+        assertTrue(result.contains(integrante2));
+        verify(reservaRepository).findById(reservaId);
+    }
+
+    @Test
+    void getIntegrantesById_noExisteReserva_deberiaLanzarThrowNoSuchElementException() {
+        // Given
+        Long reservaId = 2L;
+        when(reservaRepository.findById(reservaId)).thenReturn(Optional.empty());
+
+        // Wheny y then
+        assertThrows(java.util.NoSuchElementException.class, () -> reservaService.getIntegrantesById(reservaId));
+        verify(reservaRepository).findById(reservaId);
+    }
+
+    @Test
+    void getIntegrantesById_reservaSinIntegrantes_deberiaRetornarListaVacia() {
+        // Given
+        Long reservaId = 1L;
+        reserva.setIntegrantes(Collections.emptyList());
+        when(reservaRepository.findById(reservaId)).thenReturn(Optional.of(reserva));
+
+        // When
+        List<ClienteEntity> result = reservaService.getIntegrantesById(reservaId);
+
+        // Then
+        assertTrue(result.isEmpty());
+        verify(reservaRepository).findById(reservaId);
     }
 }
