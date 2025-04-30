@@ -38,7 +38,7 @@ pipeline {
                     script {
                         // Construir imagen con  latest
                         bat "docker build --build-arg JAR_FILE=build/libs/*.jar -t ${BACKEND_DOCKER_IMAGE}:latest ."
-                        bat "docker tag ${BACKEND_DOCKER_IMAGE}:latest ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
+                        bat "docker tag ${BACKEND_DOCKER_IMAGE} ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
                     }
                 }
             }
@@ -60,18 +60,4 @@ pipeline {
         }
     }
     
-    
-    post {
-        always {
-            script {
-                // Limpiar imagenes locales
-                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:latest || echo \"No se pudo eliminar la imagen\""
-                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT} || echo \"No se pudo eliminar la imagen\""
-                
-                dir('AppKartingRM') { // Limpiar proyecto
-                    bat 'gradlew.bat clean'
-                }
-            }
-        }
-    }
 }
