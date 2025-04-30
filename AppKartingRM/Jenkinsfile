@@ -3,9 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
-        DOCKER_IMAGE = 'isaaccumbia/karting-backend:latest'
-        // Opcional: puedes usar el hash del commit para tagging
-        //GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+        BACKEND_DOCKER_IMAGE = 'isaaccumbia/karting-backend:latest'
     }
     
     stages {
@@ -15,19 +13,32 @@ pipeline {
             }
         }
         
-        stage('Construir con Gradle') {
+        stage('Construir Backend') {
             steps {
-                sh './gradlew clean build'
+                dir('AppKartingRM') {
+                    sh './gradlew clean build'
+                }
             }
         }
         
-        stage('Ejecutar pruebas') {
+        stage('Ejecutar Pruebas Backend') {
             steps {
-                sh './gradlew test'
+                dir('AppKartingRM') {
+                    // Ejecutar todos los tests
+                    sh './gradlew test'
+                    
+                    // Opcional: si quieres ejecutar tests específicos
+                    // sh './gradlew test --tests "com.kartingRM.AppKartingRM.services.*"'
+                }
             }
             
+            post {
+                always {
+                    junit 'AppKartingRM/build/test-results/test/*.xml' // Archivar resultados de pruebas JUnit
+                }
+            }
         }
-        
+
     }
     
 
