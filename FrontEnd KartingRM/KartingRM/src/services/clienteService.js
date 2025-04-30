@@ -1,12 +1,11 @@
-import axios from 'axios';
 import httpClient from '../http-common';
 
-const URL_LOCAL = '/clientes/';
+const URL_LOCAL = '/clientes';
 
 // Peticion GET de obtener todos los clientes
 export const getClientes = async () => {
   try {
-    const response = await httpClient.get(URL_LOCAL);
+    const response = await httpClient.get(`${URL_LOCAL}/`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener clientes:', error);
@@ -17,7 +16,7 @@ export const getClientes = async () => {
 // Peticion POST de creacion de cliente
 export const createCliente = async (clienteData) => {
   try {
-    const response = await httpClient.post(URL_LOCAL, clienteData);
+    const response = await httpClient.post(`${URL_LOCAL}/`, clienteData);
     return response.data;
   } catch (error) {
     console.error('Error al crear cliente:', error);

@@ -78,7 +78,7 @@ POST, Crea plan: localhost:8080/planes/
     "precioFeriado": 22000,
     "precioFinSemana": 23000
 }
-PUT, update de plan por id: localhost:8080/clientes/1
+PUT, update de plan por id: localhost:8080/planes/1
 {
     "descripcion": "10 vueltas o max 10 min",
     "duracionTotal": 30,

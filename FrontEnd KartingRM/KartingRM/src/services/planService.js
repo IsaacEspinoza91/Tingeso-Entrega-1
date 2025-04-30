@@ -1,12 +1,11 @@
-import axios from 'axios';
 import httpClient from '../http-common';
 
-const URL_LOCAL = '/planes/';
+const URL_LOCAL = '/planes';
 
 // Peticion GET de todos los planes
 export const getPlanes = async () => {
   try {
-    const response = await httpClient.get(URL_LOCAL);
+    const response = await httpClient.get(`${URL_LOCAL}/`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener planes:', error);
@@ -28,7 +27,7 @@ export const getPlanById = async (idPlan) => {
 // Peticion POST para crear plan
 export const createPlan = async (planData) => {
   try {
-    const response = await httpClient.post(URL_LOCAL, planData);
+    const response = await httpClient.post(`${URL_LOCAL}/`, planData);
     return response.data;
   } catch (error) {
     console.error('Error al crear plan:', error);

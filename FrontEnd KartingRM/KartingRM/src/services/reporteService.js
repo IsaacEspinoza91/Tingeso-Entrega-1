@@ -1,7 +1,6 @@
-import axios from 'axios';
 import httpClient from '../http-common';
 
-const URL_LOCAL = '/reportes/'; 
+const URL_LOCAL = '/reportes'; 
 
 // Peticion Get para obtener los reportes de ingresos segun planes
 export const getReporteIngresosPorVueltas = async (params) => {

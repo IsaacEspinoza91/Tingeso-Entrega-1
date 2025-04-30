@@ -1,12 +1,11 @@
-import axios from 'axios';
 import httpClient from '../http-common';
 
-const URL_LOCAL = '/karts/';
+const URL_LOCAL = '/karts';
 
 // Peticion GET para obtener la lista de karts
 export const getKarts = async () => {
   try {
-    const response = await httpClient.get(URL_LOCAL);
+    const response = await httpClient.get(`${URL_LOCAL}/`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener karts:', error);
@@ -28,7 +27,7 @@ export const getKartById = async (idkart) => {
 // Peticion POST para crear kart 
 export const createKart = async (kartData) => {
   try {
-    const response = await httpClient.post(URL_LOCAL, kartData);
+    const response = await httpClient.post(`${URL_LOCAL}/`, kartData);
     return response.data;
   } catch (error) {
     console.error('Error al crear kart:', error);
