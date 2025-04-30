@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
+        DOCKER_IMAGE = 'isaaccumbia/karting-backend:latest'
+        // Opcional: puedes usar el hash del commit para tagging
+        //GIT_COMMIT_SHORT = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+    }
+    
+    stages {
+        stage('Obtener código') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Construir con Gradle') {
+            steps {
+                sh './gradlew clean build'
+            }
+        }
+        
+        stage('Ejecutar pruebas') {
+            steps {
+                sh './gradlew test'
+            }
+            
+        }
+        
+    }
+    
+
+}
