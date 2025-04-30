@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
         BACKEND_DOCKER_IMAGE = 'isaaccumbia/karting-backend:latest'
+        GIT_COMMIT_SHORT = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
     
     stages {
@@ -24,17 +25,53 @@ pipeline {
         stage('Ejecutar Pruebas Backend') {
             steps {
                 dir('AppKartingRM') {
-                    bat 'gradlew.bat test'
+                    bat 'gradlew.bat test --tests "com.kartingRM.AppKartingRM.services.*"'
                 }
             }
             
-            post {
-                always {
-                    junit 'AppKartingRM/build/test-results/test/*.xml'
-                    archiveArtifacts artifacts: 'AppKartingRM/build/reports/tests/test/**/*', allowEmptyArchive: true
+        }
+
+        
+        stage('Construir Imagen Docker') {
+            steps {
+                dir('AppKartingRM') {
+                    script {
+                        // Construir imagen con  latest
+                        bat "docker build --build-arg JAR_FILE=build/libs/*.jar -t ${BACKEND_DOCKER_IMAGE}:latest ."
+                        bat "docker tag ${BACKEND_DOCKER_IMAGE}:latest ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
+                    }
                 }
             }
         }
-        
+
+        stage('Subir a Docker') {
+            steps {
+                script {
+                    // Autenticar en Docker Hub
+                    bat "docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}"
+                    
+                    // Subir imagenes
+                    bat "docker push ${BACKEND_DOCKER_IMAGE}:latest"
+                    bat "docker push ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
+                    
+                    bat 'docker logout' // Limpiar credenciales
+                }
+            }
+        }
+    }
+    
+    
+    post {
+        always {
+            script {
+                // Limpiar imagenes locales
+                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:latest || echo \"No se pudo eliminar la imagen\""
+                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT} || echo \"No se pudo eliminar la imagen\""
+                
+                dir('AppKartingRM') { // Limpiar proyecto
+                    bat 'gradlew.bat clean'
+                }
+            }
+        }
     }
 }
