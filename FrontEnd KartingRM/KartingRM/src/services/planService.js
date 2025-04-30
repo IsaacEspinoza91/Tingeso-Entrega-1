@@ -1,11 +1,12 @@
 import axios from 'axios';
+import httpClient from '../http-common';
 
-const API_URL = 'http://localhost:8080/planes/';
+const URL_LOCAL = '/planes/';
 
 // Peticion GET de todos los planes
 export const getPlanes = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await httpClient.get(URL_LOCAL);
     return response.data;
   } catch (error) {
     console.error('Error al obtener planes:', error);
@@ -16,7 +17,7 @@ export const getPlanes = async () => {
 /// Peticion GET de plan segun id
 export const getPlanById = async (idPlan) => {
   try {
-    const response = await axios.get(`${API_URL}/${idPlan}`);
+    const response = await httpClient.get(`${URL_LOCAL}/${idPlan}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener plan con ID ${idPlan}:`, error);
@@ -27,7 +28,7 @@ export const getPlanById = async (idPlan) => {
 // Peticion POST para crear plan
 export const createPlan = async (planData) => {
   try {
-    const response = await axios.post(API_URL, planData);
+    const response = await httpClient.post(URL_LOCAL, planData);
     return response.data;
   } catch (error) {
     console.error('Error al crear plan:', error);
@@ -38,7 +39,7 @@ export const createPlan = async (planData) => {
 // Peticion PUT para update de plan, segun id y body
 export const updatePlan = async (idPlan, planData) => {
   try {
-    const response = await axios.put(`${API_URL}/${idPlan}`, planData);
+    const response = await httpClient.put(`${URL_LOCAL}/${idPlan}`, planData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar plan con ID ${idPlan}:`, error);
@@ -49,7 +50,7 @@ export const updatePlan = async (idPlan, planData) => {
 // Peticion DELETE para eliminar plan
 export const deletePlan = async (idPlan) => {
   try {
-    await axios.delete(`${API_URL}/${idPlan}`);
+    await httpClient.delete(`${URL_LOCAL}/${idPlan}`);
     return idPlan;
   } catch (error) {
     console.error(`Error al eliminar plan con ID ${idPlan}:`, error);

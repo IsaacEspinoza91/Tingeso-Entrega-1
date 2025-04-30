@@ -1,11 +1,12 @@
 import axios from 'axios';
+import httpClient from '../http-common';
 
-const API_URL = 'http://localhost:8080/clientes/';
+const URL_LOCAL = '/clientes/';
 
 // Peticion GET de obtener todos los clientes
 export const getClientes = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await httpClient.get(URL_LOCAL);
     return response.data;
   } catch (error) {
     console.error('Error al obtener clientes:', error);
@@ -16,7 +17,7 @@ export const getClientes = async () => {
 // Peticion POST de creacion de cliente
 export const createCliente = async (clienteData) => {
   try {
-    const response = await axios.post(API_URL, clienteData);
+    const response = await httpClient.post(URL_LOCAL, clienteData);
     return response.data;
   } catch (error) {
     console.error('Error al crear cliente:', error);
@@ -27,7 +28,7 @@ export const createCliente = async (clienteData) => {
 // Peticion GET de cliente segun id
 export const getClienteById = async (idKart) => {
   try {
-    const response = await axios.get(`${API_URL}/${idKart}`);
+    const response = await httpClient.get(`${URL_LOCAL}/${idKart}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener cliente con ID ${idKart}:`, error);
@@ -38,7 +39,7 @@ export const getClienteById = async (idKart) => {
 // Peticion GET de cliente segun rut
 export const getClienteByRut = async (rut) => {
   try {
-    const response = await axios.get(`${API_URL}/rut/${rut}`);
+    const response = await httpClient.get(`${URL_LOCAL}/rut/${rut}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener cliente con RUT ${rut}:`, error);
@@ -49,7 +50,7 @@ export const getClienteByRut = async (rut) => {
 // Peticion GET de cliente/s segun nombre y apellido
 export const getClientesByNombreApellido = async (nombre, apellido) => {
   try {
-    const response = await axios.get(`${API_URL}/nombre/${nombre}/${apellido}`);
+    const response = await httpClient.get(`${URL_LOCAL}/nombre/${nombre}/${apellido}`);
     return response.data;
   } catch (error) {
     console.error(`Error al buscar clientes por nombre ${nombre} y apellido ${apellido}:`, error);
@@ -60,7 +61,7 @@ export const getClientesByNombreApellido = async (nombre, apellido) => {
 // Peticion PUT de update de cliente segun id y body
 export const updateCliente = async (idKart, clienteData) => {
   try {
-    const response = await axios.put(`${API_URL}/${idKart}`, clienteData);
+    const response = await httpClient.put(`${URL_LOCAL}/${idKart}`, clienteData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar cliente con ID ${idKart}:`, error);
@@ -71,7 +72,7 @@ export const updateCliente = async (idKart, clienteData) => {
 // Peticion DELETE para eliminar un cliente 
 export const deleteCliente = async (idKart) => {
   try {
-    await axios.delete(`${API_URL}/${idKart}`);
+    await httpClient.delete(`${URL_LOCAL}/${idKart}`);
     return id; // Retornamos el ID eliminado para referencia
   } catch (error) {
     console.error(`Error al eliminar cliente con ID ${idKart}:`, error);

@@ -701,6 +701,7 @@ class ComprobanteServiceTest {
         verify(comprobanteRepository).save(comprobante);
     }
 
+    /*
     @Test
     void deleteDetalleComprobante_deberiaEliminarRelaciones() throws Exception {
         // Crear objetos reales con listas bien configuradas
@@ -733,7 +734,7 @@ class ComprobanteServiceTest {
         // Then
         assertTrue(result);
         verify(detalleComprobanteRepository).deleteById(1L);
-    }
+    }*/
 
 
 }

@@ -1,11 +1,12 @@
 import axios from 'axios';
+import httpClient from '../http-common';
 
-const API_URL = 'http://localhost:8080/reportes/'; 
+const URL_LOCAL = '/reportes/'; 
 
 // Peticion Get para obtener los reportes de ingresos segun planes
 export const getReporteIngresosPorVueltas = async (params) => {
   try {
-    const response = await axios.get(`${API_URL}/ingresos-por-vueltas`, { params });
+    const response = await httpClient.get(`${URL_LOCAL}/ingresos-por-vueltas`, { params });
     return response.data;
   } catch (error) {
     console.error('Error al obtener reporte de ingresos por vueltas:', error);
@@ -16,7 +17,7 @@ export const getReporteIngresosPorVueltas = async (params) => {
 // Peticion Get para obtener los reportes de ingresos cantidad de personas por reserva
 export const getReporteIngresosPorPersonas = async (params) => {
   try {
-    const response = await axios.get(`${API_URL}/ingresos-por-personas`, { params });
+    const response = await httpClient.get(`${URL_LOCAL}/ingresos-por-personas`, { params });
     return response.data;
   } catch (error) {
     console.error('Error al obtener reporte de ingresos por personas:', error);

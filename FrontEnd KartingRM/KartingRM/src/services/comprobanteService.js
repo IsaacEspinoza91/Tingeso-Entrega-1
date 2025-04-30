@@ -1,11 +1,12 @@
 import axios from 'axios';
+import httpClient from '../http-common';
 
-const API_URL = 'http://localhost:8080/comprobantes';
+const URL_LOCAL = '/comprobantes';
 
 // Peticion GET para obtener todos los comprobantes
 export const getComprobantes = async () => {
   try {
-    const response = await axios.get(`${API_URL}/`);
+    const response = await httpClient.get(`${URL_LOCAL}/`);
     return response.data;
   } catch (error) {
     console.error('Error al obtener comprobantes:', error);
@@ -16,7 +17,7 @@ export const getComprobantes = async () => {
 // Peticion Get para obtener comrpoabten segun id
 export const getComprobanteById = async (idComprobante) => {
   try {
-    const response = await axios.get(`${API_URL}/${idComprobante}`);
+    const response = await httpClient.get(`${URL_LOCAL}/${idComprobante}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener comprobante con ID ${idComprobante}:`, error);
@@ -27,8 +28,8 @@ export const getComprobanteById = async (idComprobante) => {
 // Peticion Post para crear comprobante segun id de reserva, booleano de dia feriado y descuento extra
 export const createComprobante = async (idReserva, feriado, descuentoExtra) => {
   try {
-    const response = await axios.post(
-      `${API_URL}/segun-reserva/${idReserva}?feriado=${feriado}&descuento_extra=${descuentoExtra}`
+    const response = await httpClient.post(
+      `${URL_LOCAL}/segun-reserva/${idReserva}?feriado=${feriado}&descuento_extra=${descuentoExtra}`
     );
     return response.data;
   } catch (error) {
@@ -40,7 +41,7 @@ export const createComprobante = async (idReserva, feriado, descuentoExtra) => {
 // Peticion PUT para update de comprobante
 export const updateComprobante = async (idComprobante, comprobanteData) => {
   try {
-    const response = await axios.put(`${API_URL}/${idComprobante}`, comprobanteData);
+    const response = await httpClient.put(`${URL_LOCAL}/${idComprobante}`, comprobanteData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar comprobante con ID ${idComprobante}:`, error);
@@ -51,7 +52,7 @@ export const updateComprobante = async (idComprobante, comprobanteData) => {
 // Peticion PUT para update de la reserva de comprobante
 export const updateComprobanteReserva = async (idComprobante, idReserva) => {
   try {
-    const response = await axios.put(`${API_URL}/${idComprobante}/reserva?id_reserva=${idReserva}`);
+    const response = await httpClient.put(`${URL_LOCAL}/${idComprobante}/reserva?id_reserva=${idReserva}`);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar reserva del comprobante ${idComprobante}:`, error);
@@ -62,7 +63,7 @@ export const updateComprobanteReserva = async (idComprobante, idReserva) => {
 // Peticion Delete de comprobante segun id
 export const deleteComprobante = async (idComprobante) => {
   try {
-    await axios.delete(`${API_URL}/${idComprobante}`);
+    await httpClient.delete(`${URL_LOCAL}/${idComprobante}`);
     return idComprobante;
   } catch (error) {
     console.error(`Error al eliminar comprobante con ID ${idComprobante}:`, error);
@@ -79,7 +80,7 @@ export const deleteComprobante = async (idComprobante) => {
 // Peticion GET de detalles para un comprobante segun id
 export const getDetallesByComprobante = async (idComprobante) => {
   try {
-    const response = await axios.get(`${API_URL}/detalles/comprobante/${idComprobante}`);
+    const response = await httpClient.get(`${URL_LOCAL}/detalles/comprobante/${idComprobante}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener detalles del comprobante ${idComprobante}:`, error);
@@ -90,7 +91,7 @@ export const getDetallesByComprobante = async (idComprobante) => {
 // Peticion PUT para update de detalle segun body
 export const updateDetalle = async (idDetalle, detalleData) => {
   try {
-    const response = await axios.put(`${API_URL}/detalles/update/${idDetalle}`, detalleData);
+    const response = await httpClient.put(`${URL_LOCAL}/detalles/update/${idDetalle}`, detalleData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar detalle con ID ${idDetalle}:`, error);
@@ -101,7 +102,7 @@ export const updateDetalle = async (idDetalle, detalleData) => {
 // Peticion PUT para update del cliente de detalle
 export const updateDetalleCliente = async (idDetalle, idCliente) => {
   try {
-    const response = await axios.put(`${API_URL}/detalles/update/${idDetalle}/cliente?id_cliente=${idCliente}`);
+    const response = await httpClient.put(`${URL_LOCAL}/detalles/update/${idDetalle}/cliente?id_cliente=${idCliente}`);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar cliente del detalle ${idDetalle}:`, error);
@@ -112,7 +113,7 @@ export const updateDetalleCliente = async (idDetalle, idCliente) => {
 // Peticion DELETE para detalle segun id
 export const deleteDetalle = async (idDetalle) => {
   try {
-    await axios.delete(`${API_URL}/detalles/delete/${idDetalle}`);
+    await httpClient.delete(`${URL_LOCAL}/detalles/delete/${idDetalle}`);
     return idDetalle;
   } catch (error) {
     console.error(`Error al eliminar detalle con ID ${idDetalle}:`, error);

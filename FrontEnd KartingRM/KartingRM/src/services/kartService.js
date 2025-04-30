@@ -1,11 +1,12 @@
 import axios from 'axios';
+import httpClient from '../http-common';
 
-const API_URL = 'http://localhost:8080/karts/';
+const URL_LOCAL = '/karts/';
 
 // Peticion GET para obtener la lista de karts
 export const getKarts = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const response = await httpClient.get(URL_LOCAL);
     return response.data;
   } catch (error) {
     console.error('Error al obtener karts:', error);
@@ -16,7 +17,7 @@ export const getKarts = async () => {
 // Peticion GET de kart segun id
 export const getKartById = async (idkart) => {
   try {
-    const response = await axios.get(`${API_URL}/${idkart}`);
+    const response = await httpClient.get(`${URL_LOCAL}/${idkart}`);
     return response.data;
   } catch (error) {
     console.error(`Error al obtener kart con ID ${idkart}:`, error);
@@ -27,7 +28,7 @@ export const getKartById = async (idkart) => {
 // Peticion POST para crear kart 
 export const createKart = async (kartData) => {
   try {
-    const response = await axios.post(API_URL, kartData);
+    const response = await httpClient.post(URL_LOCAL, kartData);
     return response.data;
   } catch (error) {
     console.error('Error al crear kart:', error);
@@ -38,7 +39,7 @@ export const createKart = async (kartData) => {
 // Peticion PUT para update de kart
 export const updateKart = async (idkart, kartData) => {
   try {
-    const response = await axios.put(`${API_URL}/${idkart}`, kartData);
+    const response = await httpClient.put(`${URL_LOCAL}/${idkart}`, kartData);
     return response.data;
   } catch (error) {
     console.error(`Error al actualizar kart con ID ${idkart}:`, error);
@@ -49,7 +50,7 @@ export const updateKart = async (idkart, kartData) => {
 // Peticion DELETE para eliminar kart
 export const deleteKart = async (idkart) => {
   try {
-    await axios.delete(`${API_URL}/${idkart}`);
+    await httpClient.delete(`${URL_LOCAL}/${idkart}`);
     return idkart;
   } catch (error) {
     console.error(`Error al eliminar kart con ID ${idkart}:`, error);
