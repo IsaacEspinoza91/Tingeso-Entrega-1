@@ -3,7 +3,7 @@ pipeline {
     
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
-        BACKEND_DOCKER_IMAGE = 'isaaccumbia/karting-backend:latest'
+        BACKEND_DOCKER_IMAGE = 'isaaccumbia/karting-backend'
         GIT_COMMIT_SHORT = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
     
@@ -28,16 +28,15 @@ pipeline {
                     bat 'gradlew.bat test --tests "com.kartingRM.AppKartingRM.services.*"'
                 }
             }
-            
         }
-
         
         stage('Construir Imagen Docker Backend') {
             steps {
-                script {
-                    dir('AppKartingRM') {
-                        docker.build("${BACKEND_DOCKER_IMAGE}", "--build-arg JAR_FILE=build/libs/*.jar .")
-                        docker.tag("${BACKEND_DOCKER_IMAGE}", "isaaccumbia/karting-backend:${GIT_COMMIT_SHORT}")
+                dir('AppKartingRM') {
+                    script {
+                        // Construir imagen latest
+                        bat "docker build --build-arg JAR_FILE=build/libs/*.jar -t ${BACKEND_DOCKER_IMAGE}:latest ."
+                        bat "docker tag ${BACKEND_DOCKER_IMAGE}:latest ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
                     }
                 }
             }
@@ -46,17 +45,25 @@ pipeline {
         stage('Subir a Docker') {
             steps {
                 script {
-                    // Autenticar en Docker Hub
                     bat "docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}"
                     
-                    // Subir imagenes
+                    // Subir ambas versiones
                     bat "docker push ${BACKEND_DOCKER_IMAGE}:latest"
                     bat "docker push ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
                     
-                    bat 'docker logout' // Limpiar credenciales
+                    bat "docker logout" // Cerrar sesion
                 }
             }
         }
     }
     
+    post {
+        always {
+            script {
+                // Limpiar imagenes 
+                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:latest || echo \"No se pudo eliminar la imagen latest\""
+                bat "docker rmi ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT} || echo \"No se pudo eliminar la imagen ${GIT_COMMIT_SHORT}\""
+            }
+        }
+    }
 }
