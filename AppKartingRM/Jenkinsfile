@@ -16,7 +16,7 @@ pipeline {
         stage('Construir Backend') {
             steps {
                 dir('AppKartingRM') {
-                    sh './gradlew clean build'
+                    bat 'gradlew.bat clean build'
                 }
             }
         }
@@ -24,22 +24,17 @@ pipeline {
         stage('Ejecutar Pruebas Backend') {
             steps {
                 dir('AppKartingRM') {
-                    // Ejecutar todos los tests
-                    sh './gradlew test'
-                    
-                    // Opcional: si quieres ejecutar tests específicos
-                    // sh './gradlew test --tests "com.kartingRM.AppKartingRM.services.*"'
+                    bat 'gradlew.bat test'
                 }
             }
             
             post {
                 always {
-                    junit 'AppKartingRM/build/test-results/test/*.xml' // Archivar resultados de pruebas JUnit
+                    junit 'AppKartingRM/build/test-results/test/*.xml'
+                    archiveArtifacts artifacts: 'AppKartingRM/build/reports/tests/test/**/*', allowEmptyArchive: true
                 }
             }
         }
-
+        
     }
-    
-
 }
