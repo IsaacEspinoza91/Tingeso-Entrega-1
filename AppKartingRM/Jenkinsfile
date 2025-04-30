@@ -4,7 +4,6 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
         BACKEND_DOCKER_IMAGE = 'isaaccumbia/karting-backend'
-        GIT_COMMIT_SHORT = bat(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
     }
     
     stages {
@@ -45,8 +44,6 @@ pipeline {
             steps {
                 script {
                     bat "docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}"
-                    
-                    // Subir ambas versiones
                     bat "docker push ${BACKEND_DOCKER_IMAGE}:latest"
                     bat "docker logout" // Cerrar sesion
                 }

@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
+        FRONTEND_DOCKER_IMAGE = 'isaaccumbia/karting-frontend'
+    }
+    
+    stages {
+        stage('Obtener codigo') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Instalar dependencias') {
+            steps {
+                dir('FrontEnd KartingRM/KartingRM') {
+                    bat 'npm install'
+                }
+            }
+        }
+        
+        stage('Build Frontend') {
+            steps {
+                dir('FrontEnd KartingRM/KartingRM') {
+                    bat 'npm run build'
+                }
+            }
+        }
+        
+        stage('Construir Imagen Docker') {
+            steps {
+                dir('FrontEnd KartingRM/KartingRM') {
+                    script {
+                        // Construye imagen latest
+                        bat "docker build -t ${FRONTEND_DOCKER_IMAGE}:latest ."
+                    }
+                }
+            }
+        }
+
+        stage('Subir a Docker') {
+            steps {
+                script {
+                    bat "docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}"
+                    bat "docker push ${FRONTEND_DOCKER_IMAGE}:latest"
+                    bat "docker logout"     // Cerrar sesion
+                }
+            }
+        }
+    }
+
+}
