@@ -32,13 +32,12 @@ pipeline {
         }
 
         
-        stage('Construir Imagen Docker') {
+        stage('Construir Imagen Docker Backend') {
             steps {
-                dir('AppKartingRM') {
-                    script {
-                        // Construir imagen con  latest
-                        bat "docker build --build-arg JAR_FILE=build/libs/*.jar -t ${BACKEND_DOCKER_IMAGE} ."
-                        bat "docker tag ${BACKEND_DOCKER_IMAGE} ${BACKEND_DOCKER_IMAGE}:${GIT_COMMIT_SHORT}"
+                script {
+                    dir('AppKartingRM') {
+                        docker.build("${BACKEND_DOCKER_IMAGE}", "--build-arg JAR_FILE=build/libs/*.jar .")
+                        docker.tag("${BACKEND_DOCKER_IMAGE}", "isaaccumbia/karting-backend:${GIT_COMMIT_SHORT}")
                     }
                 }
             }
