@@ -45,7 +45,6 @@ pipeline {
                 script {
                     bat "docker login -u ${DOCKER_HUB_CREDENTIALS_USR} -p ${DOCKER_HUB_CREDENTIALS_PSW}"
                     bat "docker push ${BACKEND_DOCKER_IMAGE}:latest"
-                    bat "docker logout" // Cerrar sesion
                 }
             }
         }
